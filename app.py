@@ -162,21 +162,13 @@ def main(IncubPeriod):
     #Definindo valores padrões dos parâmetros
     IncubPeriod = 5
     DurMildInf = 6
-    FracSevere = 0.15
-    FracCritical = 0.05
-    FracMild = 1 - FracSevere - FracCritical
-    ProbDeath = 0.5
     TimeICUDeath = 8
     DurHosp = 6
     tmax = 365
     i = 1
     TimeStart = 0
     TimeEnd = tmax
-    FracAsym = 0.2
     DurAsym = 6
-    CFR = FracCritical*ProbDeath
-    b0 = 0.5
-    b1 = 2.0
     b2 = 0.1
     b3 = 0.1
     reduc1 = 0.5
@@ -511,9 +503,8 @@ def main(IncubPeriod):
         st.write('Taxa de propagação de infecções leves: ',round(b1*N,3))
         st.write('Taxa de propagação de infecções graves: ',round(b2*N,3))
         st.write('Taxa de propagação de infecções críticas: ',round(b3*N,3))
-        st.subheader('10 melhores familias de parâmetros que prevêem o modelo')
-        #erro = erro.sort_values('rmse').head(20).reset_index(drop = True)
-        #erro.columns = ['Expostos iniciais','Taxa de infecção assintomática','Taxa de infecção leve','Fração de assintomáticos','Erro RMSE','Delay dos dados reais']
+        st.subheader('Melhores familias de parâmetros que prevêem o modelo para a cidade')
+
         st.table(parametros)
 
 if __name__ == "__main__":
