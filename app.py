@@ -330,7 +330,7 @@ def main(IncubPeriod):
         df_['Sim'] = 'Regressão'
         dados_casos['Tempo (dias)'] = dados_casos['index_aux']
         df_['Tempo (dias)'] = df_['Tempo (dias)'] - delay
-	st.write(df_)
+        st.write(df_)
         df_ = df_[(df_['Tempo (dias)'] >= 0) & (df_['Tempo (dias)'] < dados_casos['Tempo (dias)'].max() + 10)]
         st.subheader("Regressão de casos graves:")
         
