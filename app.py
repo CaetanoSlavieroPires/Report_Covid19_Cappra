@@ -195,7 +195,6 @@ def main(IncubPeriod):
     dados = pd.read_csv('dados_cidades.csv',encoding = "ISO-8859-1")
     cidade = st.selectbox("Selecione a cidade", ['Porto Alegre'])
     parametros = pd.read_csv('parametros_cidades.csv')
-    st.table(parametros)
     parametros = parametros[parametros['Cidade'] == cidade].sort_values('rmse')
     dados = dados.set_index('Cidade')
     dados['População'] = dados['População']#.apply(lambda x: ''.join(x.split('.')))
@@ -224,7 +223,7 @@ def main(IncubPeriod):
         E = parametros.iloc[0,0]
         b0 = parametros.iloc[0,1]/N
         b1 = parametros.iloc[0,2]/N
-        f = parametros.iloc[0,3]
+        FracAsym = parametros.iloc[0,3]
         FracSevere = parametros.iloc[0,4]
         FracCritical = parametros.iloc[0,5]
         FracMild = 1 - FracSevere - FracCritical
