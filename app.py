@@ -217,7 +217,7 @@ def main(IncubPeriod):
         fig = px.line(dados_casos, x="Data", y='Infectados')
         st.plotly_chart(fig)
         
-        n = st.selectbox("Selecione a familia de parametros", np.arrange(0,19))
+        n = st.selectbox("Selecione a familia de parametros", np.arange(0,19))
 
         b2 = b2/N
         b3 = b2/N
