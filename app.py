@@ -193,11 +193,10 @@ def main(IncubPeriod):
     
     st.title("Report da simulação do COVID-19")
     dados = pd.read_csv('dados_cidades.csv',encoding = "ISO-8859-1")
-    cidade = st.selectbox("Selecione a cidade", list(dados['Cidade']))
+    cidade = st.selectbox("Selecione a cidade", ['Porto Alegre'])
     parametros = pd.read_csv('parametros_cidades.csv')
     st.table(parametros)
     parametros = parametros[parametros['Cidade'] == cidade].sort_values('rmse')
-    st.table(parametros)
     dados = dados.set_index('Cidade')
     dados['População'] = dados['População']#.apply(lambda x: ''.join(x.split('.')))
     N = int(dados.loc[cidade,'População'])
@@ -327,9 +326,7 @@ def main(IncubPeriod):
         T = dados_casos['index'].max()
         tvec=np.arange(0,T+10,1)
         soln = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
-        st.write(soln)    
-        
-	names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
+        st.write(soln)
         df_ = pd.DataFrame(soln, columns = names)[['Inf. Grave','Inf. Crítico','Mortos']]
         df_['Tempo (dias)'] = tvec
         df_['Sim'] = 'Regressão'
