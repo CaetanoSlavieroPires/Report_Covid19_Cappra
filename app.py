@@ -227,6 +227,7 @@ def main(IncubPeriod):
         FracSevere = parametros.iloc[0,4]
         FracCritical = parametros.iloc[0,5]
         FracMild = 1 - FracSevere - FracCritical
+        delay = parametros.iloc[0,6]
         ProbDeath = parametros.iloc[0,7]
         CFR = FracCritical*ProbDeath
         
@@ -236,7 +237,6 @@ def main(IncubPeriod):
         pop[0] = N - E
         pop[1] = E
         
-        delay = parametros.iloc[0,6]
 
         st.write(E,b0,b1,FracAsym,FracSevere,FracCritical,delay,ProbDeath)
         
@@ -329,7 +329,7 @@ def main(IncubPeriod):
         #tvec=np.arange(0,T+10,1)
         #soln = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
         df_ = df_[['Inf. Grave','Inf. Crítico','Mortos']]
-        df_['Tempo (dias)'] = df_['index']
+        df_['Tempo (dias)'] =  tvec - delay
         df_['Sim'] = 'Regressão'
         dados_casos['Tempo (dias)'] = dados_casos['index_aux']
         df_ = df_[(df_['Tempo (dias)'] >= 0) & (df_['Tempo (dias)'] < dados_casos['Tempo (dias)'].max() + 10)]
