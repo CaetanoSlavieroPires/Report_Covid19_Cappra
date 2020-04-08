@@ -218,9 +218,6 @@ def main(IncubPeriod):
         st.plotly_chart(fig)
         
         n = 3
-        n = st.selectbox("Selecione a familia de parâmetros", np.arange(0,19))
-        st.write('A lista de parâmetros está no fim da página')
-        st.write('Parâmetro padrão: 3')
 
         b2 = b2/N
         b3 = b2/N
