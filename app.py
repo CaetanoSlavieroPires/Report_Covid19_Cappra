@@ -322,7 +322,7 @@ def main(IncubPeriod):
         dados_casos['Inf. Crítico'] = dados_casos['UTI']
         dados_casos['Mortos'] = dados_casos['Obitos']
         
-        T = dados_casos['index'].max()
+        T = dados_casos['Tempo (dias)'].max()
         tvec=np.arange(0,T+10,1)
         soln = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
         df_ = pd.DataFrame(soln, columns = names)[['Inf. Grave','Inf. Crítico','Mortos']]
