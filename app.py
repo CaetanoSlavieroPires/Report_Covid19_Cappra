@@ -325,12 +325,12 @@ def main(IncubPeriod):
         T = dados_casos['index'].max()
         tvec=np.arange(0,T+10,1)
         soln = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
-        st.write(soln)
         df_ = pd.DataFrame(soln, columns = names)[['Inf. Grave','Inf. Crítico','Mortos']]
         df_['Tempo (dias)'] = tvec
         df_['Sim'] = 'Regressão'
         dados_casos['Tempo (dias)'] = dados_casos['index_aux']
         df_['Tempo (dias)'] = df_['Tempo (dias)'] - delay
+	st.write(df_)
         df_ = df_[(df_['Tempo (dias)'] >= 0) & (df_['Tempo (dias)'] < dados_casos['Tempo (dias)'].max() + 10)]
         st.subheader("Regressão de casos graves:")
         
