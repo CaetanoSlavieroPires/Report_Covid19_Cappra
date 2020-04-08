@@ -243,6 +243,7 @@ def main(IncubPeriod):
         tvec = np.arange(0,tmax+delay,1)
         soln = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
         names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
+        
         df_ = pd.DataFrame(soln, columns = names)
         df_['index'] = tvec - delay
         df_ = pd.melt(df_,id_vars = ['index'], var_name='Tipo', value_name='População')
@@ -250,10 +251,11 @@ def main(IncubPeriod):
         
         st.title('Progressão natural do COVID-19')
         st.plotly_chart(fig)
+
         data_aux = dados_casos['index_aux'].max()
         st.subheader('Estimativa para daqui 7 dias:')
         data = (df_[(df_['Tipo'].isin(["Sucetíveis","Expostos",'Recuperados','Mortos','Inf. Crítico','Inf. Grave','Assintomáticos', 'Inf. Leve'])) & (df_['index'] == data_aux + 7)][['Tipo','População']].set_index('Tipo')/N*100)
-        data = data.round(3).to_dict()['População']
+        data = data.round(1).to_dict()['População']
         st.table(pd.DataFrame(data, index = ['%']))
 
         fig = plt.figure(
@@ -276,7 +278,7 @@ def main(IncubPeriod):
         
         st.subheader('Estimativa para daqui 30 dias:')
         data = (df_[(df_['Tipo'].isin(["Sucetíveis","Expostos",'Recuperados','Mortos','Inf. Crítico','Inf. Grave','Assintomáticos', 'Inf. Leve'])) & (df_['index'] == data_aux + 30)][['Tipo','População']].set_index('Tipo')/N*100)
-        data = data.round(3).to_dict()['População']
+        data = data.round(1).to_dict()['População']
         st.table(pd.DataFrame(data, index = ['%']))
         fig = plt.figure(
             FigureClass=Waffle, 
@@ -298,7 +300,7 @@ def main(IncubPeriod):
         
         st.subheader('Estimativa para o fim da simulação:')
         data = (df_[(df_['Tipo'].isin(["Sucetíveis",'Recuperados','Mortos'])) & (df_['index'] == df_['index'].max())][['Tipo','População']].set_index('Tipo')/N*100)
-        data = data.round(3).to_dict()['População']
+        data = data.round(1).to_dict()['População']
         st.table(pd.DataFrame(data, index = ['%']))
         fig = plt.figure(
             FigureClass=Waffle, 
@@ -318,21 +320,17 @@ def main(IncubPeriod):
         plt.show()
         st.pyplot()
         
-        dados_casos['Tempo (dias)'] = dados_casos['index_aux'] + delay
         dados_casos['Sim'] = 'Real'
         dados_casos['Inf. Grave'] = dados_casos['Ativos']
         dados_casos['Inf. Crítico'] = dados_casos['UTI']
         dados_casos['Mortos'] = dados_casos['Obitos']
-        
-        T = dados_casos['Tempo (dias)'].max()
-        tvec=np.arange(0,T+10,1)
-        soln = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
-        df_ = pd.DataFrame(soln, columns = names)[['Inf. Grave','Inf. Crítico','Mortos']]
-        df_['Tempo (dias)'] = tvec
+        #T = dados_casos['Tempo (dias)'].max()
+        #tvec=np.arange(0,T+10,1)
+        #soln = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
+        df_ = df_[['Inf. Grave','Inf. Crítico','Mortos']]
+        df_['Tempo (dias)'] = df_['index']
         df_['Sim'] = 'Regressão'
         dados_casos['Tempo (dias)'] = dados_casos['index_aux']
-        df_['Tempo (dias)'] = df_['Tempo (dias)'] - delay
-        st.write(df_)
         df_ = df_[(df_['Tempo (dias)'] >= 0) & (df_['Tempo (dias)'] < dados_casos['Tempo (dias)'].max() + 10)]
         st.subheader("Regressão de casos graves:")
         
@@ -366,7 +364,7 @@ def main(IncubPeriod):
         names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
 
 #########  Simulação sem intervenção #########################################################
-        tvec=np.arange(0,tmax+delay,1)
+        tvec=np.arange(0,tmax + delay,1)
         sim_sem_int = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
         #Criando dataframe
         df_sim_sem_int = pd.DataFrame(sim_sem_int, columns = names)
