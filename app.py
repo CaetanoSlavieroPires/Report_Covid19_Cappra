@@ -204,6 +204,7 @@ def main(IncubPeriod):
     cidade = st.selectbox("Selecione a cidade", list(dados['Cidade']))
     parametros = pd.read_csv('parametros_cidades.csv')
     parametros = parametros[parametros['Cidade'] == cidade].sort_values('rmse')
+    st.write(parametros)
     dados = dados.set_index('Cidade')
     dados['População'] = dados['População']#.apply(lambda x: ''.join(x.split('.')))
     N = int(dados.loc[cidade,'População'])
