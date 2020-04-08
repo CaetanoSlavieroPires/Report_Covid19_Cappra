@@ -202,6 +202,8 @@ def main(IncubPeriod):
     st.title("Report da simulação do COVID-19")
     dados = pd.read_csv('dados_cidades.csv',encoding = "ISO-8859-1")
     cidade = st.selectbox("Selecione a cidade", list(dados['Cidade']))
+    parametros = pd.read_csv('parametros_cidades.csv')
+    parametros = parametros[parametros['Cidade'] == cidade].sort_values('rmse')
     dados = dados.set_index('Cidade')
     dados['População'] = dados['População']#.apply(lambda x: ''.join(x.split('.')))
     N = int(dados.loc[cidade,'População'])
@@ -224,19 +226,19 @@ def main(IncubPeriod):
         fig = px.line(dados_casos, x="Data", y='Infectados')
         st.plotly_chart(fig)
         
-        lista_expostos = [1,5,10]
-        lista_b0 = [0.3,0.5,0.7,1,1.5]
-        lista_b1 = [0.3,0.5,0.7,1,1.5]
-        lista_f = [0.2,0.3,0.4,0.5]
-        lista_delay = [30,40,45]
-        lista_f_grave = [0.2,0.25]
-        lista_f_critico = [0.05,0.07]
-        lista_p_morte = [0.15]
+        #lista_expostos = [1,5,10]
+        #lista_b0 = [0.3,0.5,0.7,1,1.5]
+        #lista_b1 = [0.3,0.5,0.7,1,1.5]
+        #lista_f = [0.2,0.3,0.4,0.5]
+        #lista_delay = [30,40,45]
+        #lista_f_grave = [0.2,0.25]
+        #lista_f_critico = [0.05,0.07]
+        #lista_p_morte = [0.15]
         
         b2 = b2/N
         b3 = b2/N
         
-        erro = pd.DataFrame(itertools.product(lista_expostos,lista_b0,lista_b1, lista_f, lista_f_grave, lista_f_critico, lista_delay, lista_p_morte), columns = ['E','b0','b1','f','f_grave','f_critico','delay','p_morte'])
+        #erro = pd.DataFrame(itertools.product(lista_expostos,lista_b0,lista_b1, lista_f, lista_f_grave, lista_f_critico, lista_delay, lista_p_morte), columns = ['E','b0','b1','f','f_grave','f_critico','delay','p_morte'])
         
         ################### Encontra parâmetros que minimiza o erro do modelo em relação aos dados reais #############
         def rmse_calc(x):
@@ -276,17 +278,17 @@ def main(IncubPeriod):
             return MSE_crit**(0.5) + MSE_grave**(0.5) + MSE_mortos**(0.5)
         
         
-        erro['rmse'] = erro.apply(lambda x: rmse_calc(x),axis = 1)
+        #erro['rmse'] = erro.apply(lambda x: rmse_calc(x),axis = 1)
         
-        best_params = erro.reset_index(drop = True).sort_values('rmse').reset_index(drop = True).head(1)
-        E = best_params.iloc[0,0]
-        b0 = best_params.iloc[0,1]/N
-        b1 = best_params.iloc[0,2]/N
-        f = best_params.iloc[0,3]
-        FracSevere = best_params.iloc[0,4]
-        FracCritical = best_params.iloc[0,5]
+        #best_params = erro.reset_index(drop = True).sort_values('rmse').reset_index(drop = True).head(1)
+        E = parametros.iloc[0,0]
+        b0 = parametros.iloc[0,1]/N
+        b1 = parametros.iloc[0,2]/N
+        f = parametros.iloc[0,3]
+        FracSevere = parametros.iloc[0,4]
+        FracCritical = parametros.iloc[0,5]
         FracMild = 1 - FracSevere - FracCritical
-        ProbDeath = best_params.iloc[0,7]
+        ProbDeath = parametros.iloc[0,7]
         CFR = FracCritical*ProbDeath
         
         a0, u, g0, g1, g2, g3, p1, p2, f, ic = params(IncubPeriod, FracMild, FracCritical, FracSevere, TimeICUDeath, CFR, DurMildInf, DurHosp, i, FracAsym, DurAsym, N)
@@ -295,7 +297,7 @@ def main(IncubPeriod):
         pop[0] = N - E
         pop[1] = E
         
-        delay = best_params.iloc[0,6]
+        delay = parametros.iloc[0,6]
         
         tvec=np.arange(0,365,1)
         soln=odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
@@ -562,9 +564,9 @@ def main(IncubPeriod):
         st.write('Taxa de propagação de infecções graves: ',round(b2*N,3))
         st.write('Taxa de propagação de infecções críticas: ',round(b3*N,3))
         st.subheader('10 melhores familias de parâmetros que prevêem o modelo')
-        erro = erro.sort_values('rmse').head(20).reset_index(drop = True)
+        #erro = erro.sort_values('rmse').head(20).reset_index(drop = True)
         #erro.columns = ['Expostos iniciais','Taxa de infecção assintomática','Taxa de infecção leve','Fração de assintomáticos','Erro RMSE','Delay dos dados reais']
-        st.table(erro)
+        st.table(parametros)
 
 if __name__ == "__main__":
     main(IncubPeriod)
