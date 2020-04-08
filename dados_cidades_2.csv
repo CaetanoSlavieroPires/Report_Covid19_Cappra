@@ -1,0 +1,27 @@
+Data,Casos,Obitos,Curado,UTI,Ativos,Cidade
+11/03/2020,2,0,0,0,2,Porto Alegre
+12/03/2020,2,0,0,0,2,Porto Alegre
+13/03/2020,4,0,0,0,4,Porto Alegre
+14/03/2020,5,0,0,0,5,Porto Alegre
+15/03/2020,5,0,0,0,5,Porto Alegre
+16/03/2020,8,0,0,0,8,Porto Alegre
+17/03/2020,16,0,0,0,16,Porto Alegre
+18/03/2020,20,0,0,0,20,Porto Alegre
+19/03/2020,22,0,0,0,22,Porto Alegre
+20/03/2020,32,0,0,0,32,Porto Alegre
+21/03/2020,42,0,0,0,42,Porto Alegre
+22/03/2020,60,0,0,0,60,Porto Alegre
+23/03/2020,68,0,0,0,68,Porto Alegre
+24/03/2020,81,0,0,0,81,Porto Alegre
+25/03/2020,100,1,8,0,91,Porto Alegre
+26/03/2020,115,1,17,11,86,Porto Alegre
+27/03/2020,118,2,17,10,89,Porto Alegre
+28/03/2020,133,2,17,16,98,Porto Alegre
+29/03/2020,144,2,17,18,107,Porto Alegre
+30/03/2020,162,2,24,20,116,Porto Alegre
+31/03/2020,190,2,26,18,144,Porto Alegre
+01/04/2020,208,3,27,25,153,Porto Alegre
+02/04/2020,227,3,37,26,161,Porto Alegre
+03/04/2020,233,4,44,28,157,Porto Alegre
+04/04/2020,240,4,50,32,154,Porto Alegre
+05/04/2020,251,4,53,31,163,Porto Alegre
