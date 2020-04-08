@@ -246,6 +246,7 @@ def main(IncubPeriod):
         
         df_ = pd.DataFrame(soln, columns = names)
         df_['index'] = tvec - delay
+        df__ = df_
         df_ = pd.melt(df_,id_vars = ['index'], var_name='Tipo', value_name='População')
         fig = px.line(df_[~df_['Tipo'].isin(['Sucetíveis','Recuperados','Mortos'])], x="index", y='População', color = 'Tipo')
         
@@ -319,7 +320,7 @@ def main(IncubPeriod):
         fig.set_facecolor('#EEEEEE')
         plt.show()
         st.pyplot()
-        
+        df_ = df__
         dados_casos['Sim'] = 'Real'
         dados_casos['Inf. Grave'] = dados_casos['Ativos']
         dados_casos['Inf. Crítico'] = dados_casos['UTI']
