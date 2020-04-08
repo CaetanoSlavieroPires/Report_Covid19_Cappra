@@ -50,58 +50,40 @@ def params(IncubPeriod, FracMild, FracCritical, FracSevere, TimeICUDeath, CFR, D
 
     
 #Simulação com intevenção
-def simulacao(TimeStart, TimeEnd, tmax, pop, N, a0, b0, b1, b2 , b3, b0Int, b1Int, b2Int, b3Int, g0, g1, g2, g3, p1, p2, u, names, f):
+def simulacao(TimeStart, TimeEnd, tmax, pop, N, a0, b0, b1, b2 , b3, b0Int, b1Int, b2Int, b3Int, g0, g1, g2, g3, p1, p2, u, names, f,delay):
+    TimeStart = TimeStart + delay
+    TimeEnd = TimeEnd + delay
+    tmax = tmax + delay
     if TimeEnd>TimeStart: #Se há intervenção
-            if TimeStart > 0: #Se a intervenção começa após o dia 0
-                tvec = np.arange(0,TimeStart,1) #A simulação sem intervenção termina em t = TimeStart
-                sim_sem_int_1 = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
-                pop = sim_sem_int_1[-1] #Salva a população atual
-                
-                #Criando DataFrame
-                df_sim_com_int = pd.DataFrame(sim_sem_int_1, columns = names)
-                df_sim_com_int['Tempo (dias)'] = tvec
-                df_sim_com_int['Simulação'] = 'Com intervenção'
-            
+            tvec = np.arange(0,TimeStart,1) #A simulação sem intervenção termina em t = TimeStart
+            sim_sem_int_1 = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
+            pop = sim_sem_int_1[-1] #Salva a população atual
+           #Criando DataFrame
+            df_sim_com_int = pd.DataFrame(sim_sem_int_1, columns = names)
+            df_sim_com_int['Tempo (dias)'] = tvec
+            df_sim_com_int['Simulação'] = 'Com intervenção'            
                 #Simulação após o início da intervenção
-                tvec=np.arange(TimeStart,TimeEnd,1)
-                sim_com_int = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u, b0Int, b1Int, b2Int, b3Int,f))
-                pop = sim_com_int[-1] #Salva população atual
-                #Criando DataFrame
-                df_aux = pd.DataFrame(sim_com_int, columns = names)
+            tvec=np.arange(TimeStart,TimeEnd,1)
+            sim_com_int = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u, b0Int, b1Int, b2Int, b3Int,f))
+            pop = sim_com_int[-1] #Salva população atual
+            #Criando DataFrame
+            df_aux = pd.DataFrame(sim_com_int, columns = names)
+            df_aux['Tempo (dias)'] = tvec
+            df_aux['Simulação'] = 'Com intervenção'
+            #Append dataframe
+            df_sim_com_int = df_sim_com_int.append(df_aux)
+                
+            if TimeEnd < tmax: #Se a intervenção termina antes do tempo final
+                tvec = np.arange(TimeEnd,tmax,1) #A simulação sem intervenção termina em t = TimeStart
+                    #Simulação sem intervenção (após o fim da intervenção)
+                sim_sem_int_2 = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
+                    #Criando dataframe
+                df_aux = pd.DataFrame(sim_sem_int_2, columns = names)
                 df_aux['Tempo (dias)'] = tvec
                 df_aux['Simulação'] = 'Com intervenção'
-                #Append dataframe
-                df_sim_com_int = df_sim_com_int.append(df_aux)
-                
-                if TimeEnd < tmax: #Se a intervenção termina antes do tempo final
-                    tvec = np.arange(TimeEnd,tmax,1) #A simulação sem intervenção termina em t = TimeStart
-                    #Simulação sem intervenção (após o fim da intervenção)
-                    sim_sem_int_2 = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
-                    #Criando dataframe
-                    df_aux = pd.DataFrame(sim_sem_int_2, columns = names)
-                    df_aux['Tempo (dias)'] = tvec
-                    df_aux['Simulação'] = 'Com intervenção'
                     #Append dataframe
-                    df_sim_com_int = df_sim_com_int.append(df_aux)
-                    
-                    
-            elif TimeStart == 0: #Se a intervenção começa no dia 0
-                tvec=np.arange(0,TimeEnd,0.1)
-                sim_com_int = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u, b0Int, b1Int, b2Int, b3Int,f))
-                pop = sim_com_int[-1]
-                df_sim_com_int = pd.DataFrame(sim_com_int, columns = names)
-                df_sim_com_int['Tempo (dias)'] = tvec
-                df_sim_com_int['Simulação'] = 'Com intervenção'
-                #sim = sim_com_int
-                if TimeEnd < tmax: #Se a intervenção termina antes do tempo final
-                    tvec = np.arange(TimeEnd,tmax,1) #A simulação sem intervenção termina em t = TimeStart
-                    #Simulação sem intervenção (após o fim da intervenção)
-                    sim_sem_int_2 = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
-                   #Criando dataframe
-                    df_aux = pd.DataFrame(sim_sem_int_2, columns = names)
-                    df_aux['Tempo (dias)'] = tvec
-                    df_aux['Simulação'] = 'Com intervenção'
-                    df_sim_com_int = df_sim_com_int.append(df_aux)       
+                df_sim_com_int = df_sim_com_int.append(df_aux)
+                        
             return df_sim_com_int
     
 
@@ -171,9 +153,6 @@ def new_growth_rate(g0,g1,g2,g3,p1,p2,b0,b1,b2,b3,u,a0,N,f): #Growth rate após 
     DoublingTime=np.log(2)/r
     
     return r, DoublingTime
-
-        
-
 
 
 def main(IncubPeriod):
@@ -457,7 +436,7 @@ def main(IncubPeriod):
 #############################################################################################
         
         #Simulação com intervenção
-        df_sim_com_int = simulacao(TimeStart+delay, TimeEnd+delay, tmax+delay, pop, N, a0, b0, b1, b2 , b3, b0Int, b1Int, b2Int, b3Int, g0, g1, g2, g3, p1, p2, u, names, f)
+        df_sim_com_int = simulacao(TimeStart, TimeEnd, tmax, pop, N, a0, b0, b1, b2 , b3, b0Int, b1Int, b2Int, b3Int, g0, g1, g2, g3, p1, p2, u, names, f, delay)
         df_sim_com_int['Tempo (dias)'] = df_sim_com_int['Tempo (dias)'] - delay
         y_index = 'Número de pessoas'  
 
@@ -541,7 +520,7 @@ def main(IncubPeriod):
             }
 
         
-        st.table(pd.DataFrame(dict_sem, index = ['Com intervenção']).append(pd.DataFrame(dict_com, index = ['Sem intervenção'])))
+        st.table(pd.DataFrame(dict_sem, index = ['Sem interveção']).append(pd.DataFrame(dict_com, index = ['Com intervenção'])))
         
         st.title('Auge de infectados')
         
