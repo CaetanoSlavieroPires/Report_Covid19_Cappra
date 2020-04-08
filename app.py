@@ -164,11 +164,11 @@ def main(IncubPeriod):
     DurMildInf = 6
     TimeICUDeath = 8
     DurHosp = 6
+    DurAsym = 6
     tmax = 365
     i = 1
     TimeStart = 0
     TimeEnd = tmax
-    DurAsym = 6
     b2 = 0.1
     b3 = 0.1
     reduc1 = 0.5
@@ -237,6 +237,8 @@ def main(IncubPeriod):
         pop[1] = E
         
         delay = parametros.iloc[0,6]
+
+        st.write(E,b0,b1,FracAsym,FracSevere,FracCritical,delay,ProbDeath)
         
         tvec = np.arange(0,tmax+delay,1)
         soln = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
@@ -400,7 +402,7 @@ def main(IncubPeriod):
         df_sim_com_int[y_index] = df_sim_com_int["Inf. Crítico"]
         df_sim_sem_int[y_index] = df_sim_sem_int["Inf. Crítico"]
         df = df_sim_sem_int[['Tempo (dias)',y_index, 'Simulação']].append(df_sim_com_int[['Tempo (dias)',y_index, 'Simulação']])
-            
+                    
         data1 = []
         for x in range(0, tmax):
             data1.append([x,'Leitos da UTI',AvailICUBeds])
