@@ -214,8 +214,7 @@ def main(IncubPeriod):
     if page == 'Report':
         dados_casos = pd.read_csv('dados_cidades_2.csv')
         dados_casos = dados_casos[dados_casos['Cidade']==cidade].reset_index(drop = True).reset_index()  
-        st.subheader('Casos ativos da cidade')
-        #st.write(dados_casos)
+        st.subheader('Casos confirmados da cidade')
         
         dados_casos['index_aux'] = dados_casos['index']
         dados_casos['Sim'] = 'REAL'
@@ -228,61 +227,9 @@ def main(IncubPeriod):
         fig = px.line(dados_casos, x="Data", y='Infectados')
         st.plotly_chart(fig)
         
-        #lista_expostos = [1,5,10]
-        #lista_b0 = [0.3,0.5,0.7,1,1.5]
-        #lista_b1 = [0.3,0.5,0.7,1,1.5]
-        #lista_f = [0.2,0.3,0.4,0.5]
-        #lista_delay = [30,40,45]
-        #lista_f_grave = [0.2,0.25]
-        #lista_f_critico = [0.05,0.07]
-        #lista_p_morte = [0.15]
-        
         b2 = b2/N
         b3 = b2/N
         
-        #erro = pd.DataFrame(itertools.product(lista_expostos,lista_b0,lista_b1, lista_f, lista_f_grave, lista_f_critico, lista_delay, lista_p_morte), columns = ['E','b0','b1','f','f_grave','f_critico','delay','p_morte'])
-        
-        ################### Encontra parâmetros que minimiza o erro do modelo em relação aos dados reais #############
-        def rmse_calc(x):
-            E = x['E'] #Expostos iniciais
-            b0 = x['b0']/N #Taxa de transmissão assintomática 
-            b1 = x['b1']/N #Taxa de transmissão inf.leve
-            f = x['f'] #Fração de assintomáticos
-            FracSevere = x['f_grave'] #Fração grave
-            FracCritical = x['f_critico'] #Fração crítico 
-            FracMild = 1 - FracSevere - FracCritical #Fração leve
-            ProbDeath = x['p_morte'] #Probabilidade de morte
-            CFR = FracCritical*ProbDeath #Taxa de morte
-            
-            pop = np.zeros(8)
-            pop[0] = N - E
-            pop[1] = E
-            
-            a0, u, g0, g1, g2, g3, p1, p2, f, ic = params(IncubPeriod, FracMild, FracCritical, FracSevere, TimeICUDeath, CFR, DurMildInf, DurHosp, i, FracAsym, DurAsym, N)
-            
-            delay = x['delay']
-            dados_casos['index'] = dados_casos['index_aux'] + delay
-            
-            T = dados_casos['index'].max()
-            tvec=np.arange(0,T+1,1)
-            soln = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
-            
-            names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
-            df_ = pd.DataFrame(soln, columns = names)
-            df_['index'] = tvec
-            df_aux = df_[(df_.index >= delay) & (df_.index < T+1)]
-            
-            MSE_crit = mean_squared_error(y_true = (dados_casos['UTI']), y_pred = (df_aux['Inf. Crítico']))
-            MSE_grave = mean_squared_error(y_true = (dados_casos['Ativos']), y_pred = (df_aux['Inf. Grave']))
-            MSE_mortos = mean_squared_error(y_true = (dados_casos['Obitos']), y_pred = (df_aux['Mortos']))
-            #MSE_rec = mean_squared_error(y_true = (dados_casos['Curado']), y_pred = (df_aux['Recuperados']))
-
-            return MSE_crit**(0.5) + MSE_grave**(0.5) + MSE_mortos**(0.5)
-        
-        
-        #erro['rmse'] = erro.apply(lambda x: rmse_calc(x),axis = 1)
-        
-        #best_params = erro.reset_index(drop = True).sort_values('rmse').reset_index(drop = True).head(1)
         E = parametros.iloc[0,0]
         b0 = parametros.iloc[0,1]/N
         b1 = parametros.iloc[0,2]/N
@@ -301,8 +248,8 @@ def main(IncubPeriod):
         
         delay = parametros.iloc[0,6]
         
-        tvec=np.arange(0,365,1)
-        soln=odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
+        tvec = np.arange(0,tmax+delay,1)
+        soln = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
         names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
         df_ = pd.DataFrame(soln, columns = names)
         df_['index'] = tvec - delay
@@ -388,8 +335,9 @@ def main(IncubPeriod):
         T = dados_casos['index'].max()
         tvec=np.arange(0,T+10,1)
         soln = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
-            
-        names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
+        st.write(soln)    
+        
+	names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
         df_ = pd.DataFrame(soln, columns = names)[['Inf. Grave','Inf. Crítico','Mortos']]
         df_['Tempo (dias)'] = tvec
         df_['Sim'] = 'Regressão'
@@ -404,13 +352,11 @@ def main(IncubPeriod):
         
         st.subheader("Regressão de casos críticos:")
         
-        #df_ = df_.append(dados_casos[['index','Inf. Grave','Inf. Crítico','Mortos','Sim']])
         fig = px.line(df_, x="Tempo (dias)", y='Inf. Crítico', color = 'Sim')
         st.plotly_chart(fig)
         
         st.subheader("Regresão de mortes")
         
-        #df_ = df_.append(dados_casos[['index','Inf. Grave','Inf. Crítico','Mortos','Sim']])
         fig = px.line(df_, x="Tempo (dias)", y='Mortos', color = 'Sim')
         st.plotly_chart(fig)
                 
