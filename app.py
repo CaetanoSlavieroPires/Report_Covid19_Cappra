@@ -217,18 +217,20 @@ def main(IncubPeriod):
         fig = px.line(dados_casos, x="Data", y='Infectados')
         st.plotly_chart(fig)
         
+        n = st.selectbox("Selecione a familia de parametros", np.arrange(0,19))
+
         b2 = b2/N
         b3 = b2/N
         
-        E = parametros.iloc[0,0]
-        b0 = parametros.iloc[0,1]/N
-        b1 = parametros.iloc[0,2]/N
-        FracAsym = parametros.iloc[0,3]
-        FracSevere = parametros.iloc[0,4]
-        FracCritical = parametros.iloc[0,5]
+        E = parametros.iloc[n,0]
+        b0 = parametros.iloc[n,1]/N
+        b1 = parametros.iloc[n,2]/N
+        FracAsym = parametros.iloc[n,3]
+        FracSevere = parametros.iloc[n,4]
+        FracCritical = parametros.iloc[n,5]
         FracMild = 1 - FracSevere - FracCritical
-        delay = parametros.iloc[0,6]
-        ProbDeath = parametros.iloc[0,7]
+        delay = parametros.iloc[n,6]
+        ProbDeath = parametros.iloc[n,7]
         CFR = FracCritical*ProbDeath
         
         a0, u, g0, g1, g2, g3, p1, p2, f, ic = params(IncubPeriod, FracMild, FracCritical, FracSevere, TimeICUDeath, CFR, DurMildInf, DurHosp, i, FracAsym, DurAsym, N)
@@ -320,6 +322,7 @@ def main(IncubPeriod):
         fig.set_facecolor('#EEEEEE')
         plt.show()
         st.pyplot()
+
         df_ = df__
         dados_casos['Sim'] = 'Real'
         dados_casos['Inf. Grave'] = dados_casos['Ativos']
