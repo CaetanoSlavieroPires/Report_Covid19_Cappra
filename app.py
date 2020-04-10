@@ -273,7 +273,7 @@ def main(IncubPeriod):
         df_aux = data.copy(deep = True)
         df_aux['População'] = df_aux['População'].apply(lambda x: str(round(x,2)) + '%')
         data = data.to_dict()['População']
-        st.table(pd.DataFrame(df_aux.to_dict()['População'], index = ['Percentagem da população']))
+        st.table(pd.DataFrame(df_aux.to_dict()['População'], index = ['Porcentagem da população']))
 
         fig = plt.figure(
             FigureClass=Waffle, 
@@ -298,7 +298,7 @@ def main(IncubPeriod):
         df_aux = data.copy(deep = True)
         df_aux['População'] = df_aux['População'].apply(lambda x: str(round(x,2)) + '%')
         data = data.to_dict()['População']
-        st.table(pd.DataFrame(df_aux.to_dict()['População'], index = ['Percentagem da população']))
+        st.table(pd.DataFrame(df_aux.to_dict()['População'], index = ['Porcentagem da população']))
         fig = plt.figure(
             FigureClass=Waffle, 
             rows=5,
