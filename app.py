@@ -219,6 +219,12 @@ def main(IncubPeriod):
         st.subheader('Casos ativos e internados na UTI em ' + cidade)
         fig = px.line(dados_casos, x="Data", y='Infectados')
         st.plotly_chart(fig)
+
+        st.subheader('Quantidade de testes realizados vs testes negativos')
+        dados_casos_aux = dados_casos[['Data','Testes','Negativos']]
+        dados_casos_aux = pd.melt(dados_casos_aux,id_vars = ['Data'], var_name='Tipo', value_name='Quantidade')
+        fig = px.line(dados_casos_aux, x='Data',y = 'Quantidade', color = 'Tipo')
+        st.plotly_chart(fig)
         
 
         b2 = b2/N
