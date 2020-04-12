@@ -192,7 +192,7 @@ def main(IncubPeriod):
 
     
     st.title("Report da simulação do COVID-19")
-    st.write("Esse simulador utiliza o modelo epidêmico SEIR para modelar o crescimento do CODIV-19 nas cidades brasileiras, utilizando dados de casos graves, críticos e óbitos divulgados pelas secretarias de saúde.")
+    st.write("Esse simulador desenvolvido pela [Cappra Institute for Data Science](https://www.cappra.institute/) utiliza o modelo epidêmico SEIR desenvolvido pela cientista [Alison Hill](https://alhill.shinyapps.io/COVID19seir/) para modelar o crescimento do CODIV-19 nas cidades brasileiras, utilizando dados de casos graves, críticos e óbitos divulgados pelas secretarias de saúde.")
     st.write("A subnotificação de casos e o baixo número de testes na população tem sido um problema para realizar a modelagem, obrigando os pesquisadores a fazerem extrapolações de casos para estimar o crescimento do vírus no Brasil. Tendo isso em vista, o modelo é parametrizado utilizando as notificações de casos hospitalizados, internados em UTI e óbitos, por serem os dados mais realistas divulgados pelas secretarias de saude. Com isso, podemos fazer extrapolações de diversos cenários da propagação do vírus, prevendo o que poderá acontecer com o sistema de saúde com e sem ações de distanciamento social e estimando a duração da propagação do vírus em nossas cidades.")
     st.write("Poder realizar essa simulação com qualidade depende inteiramente de uma divulgação transparente e bem estruturada dos dados do COVID-19 e seus resultados são apenas tentativas de se aproximar da realidade do tamanho da infecção no Brasil. Como todo modelo, deve ser contextualizado e não deve ser levado como regra.")
     dados = pd.read_csv('dados_cidades.csv', encoding = "ISO-8859-1")
@@ -288,7 +288,7 @@ def main(IncubPeriod):
             values=data, 
             colors=("#58c736","#a4de26","#0b2fe3","#f5c842","#fc9403","#f73c02","#07e8f0","#ed07bf"),
             title={'label': '', 'loc': 'left'},
-            labels=["{0} ({1}%)".format(k, v) for k, v in data.items()],
+            labels=["{0}".format(k) for k, v in data.items()],
             legend={'loc': 'lower left', 'bbox_to_anchor': (0, -0.2),'ncol':3, 'framealpha': 10},
             icons='user', icon_size=45, 
             icon_legend=True,
@@ -312,7 +312,7 @@ def main(IncubPeriod):
             values=data, 
             colors=("#58c736","#a4de26","#0b2fe3","#f5c842","#fc9403","#f73c02","#07e8f0","#ed07bf"),
             title={'label': '', 'loc': 'left'},
-            labels=["{0} ({1}%)".format(k, v) for k, v in data.items()],
+            labels=["{0}".format(k) for k, v in data.items()],
             legend={'loc': 'lower left', 'bbox_to_anchor': (0, -0.2),'ncol':3, 'framealpha':10},
             icons='user', icon_size=45, 
             icon_legend=True,
@@ -336,7 +336,7 @@ def main(IncubPeriod):
             values=data, 
             colors=("#58c736", "#07e8f0", "#c734ae"),
             title={'label': '', 'loc': 'left'},
-            labels=["{0} ({1}%)".format(k, v) for k, v in data.items()],
+            labels=["{0}".format(k) for k, v in data.items()],
             legend={'loc': 'lower left', 'bbox_to_anchor': (0, -0.2), 'ncol': 3, 'framealpha': 10},
             icons='user', icon_size=45, 
             icon_legend=True,
@@ -385,6 +385,7 @@ def main(IncubPeriod):
         st.title("Capacidade do sistema de saúde e medidas de intervenção")
         st.write("Um dos principais objetivos da simulação é comparar o cenário atual de crescimento do vírus com um cenário onde há intervenções que reduzam a propagação do vírus, como distanciamento social, quarentena, uso de máscaras, entre outras medidas possíveis. Com reduções na transmissão do vírus, podemos encontrar cenários onde nosso sistema saúde pode ser capaz de lidar com o vírus sem o colapso e esgotamento de leitos hospitalares, de UTI ou respiradores ou cenários piores, onde somos capaz de reduzir a transmissão mas não o suficiente para evitar o colapso do sistema de saúde, necessitando a ampliação deste.")
         st.write("Os parâmetros de redução de transmissão estão no painel lateral esquerdo. Nele, podemos selecionar o início e o fim das medidas de intervenção e em quanto  % será reduzida a transmissão de cada caso, além de poder aumentar ou diminuir o tempo da simulação.")
+        st.write("Nos gráficos, a curva azul são os casos da evolução do vírus sem as medidas de intervenção, enquanto a curva vermelha representa a evolução com intervenção. A curva verde, sempre constante, é ou quantidade de leitos hospitalares, ou a quatidades de vagas na UTI ou a quantidade de respiradores disponibilizados pela cidade, listados na primeira tabela do report. Nessa simulação está sendo considerada a quantidade total de leitos hospitalares e UTI e quantidade máxima de respiradores disponíveis. Para uma melhor comparação, deve ser considerada a quantidade de leitos e respiradores ocupados.")
 
         AvailHospBeds= int(dados.loc[cidade,'Leitos Hospitalares Adulto'])
         AvailICUBeds=int(dados.loc[cidade,'Leitos UTI Adulto'])
@@ -517,6 +518,12 @@ def main(IncubPeriod):
             st.table(pd.DataFrame(lista_2, columns = ['Dias após primeiro caso','Quantidade de pessoas'],index = ['Casos leves','Casos graves','Casos críticos']))
         except:
             pass
+        
+        st.title("Sobre a simulação:")
+        st.write("A simulação e a modelagem foram desenvolvidas aplicando um simulador mais generalizado que desenvolvemos na [Cappra Institute for Data Science](https://www.cappra.institute/) utiliza o modelo epidêmico SEIR desenvolvido pela cientista [Alison Hill](https://alhill.shinyapps.io/COVID19seir/).")
+        st.write("Para acessar o simulador original, que permite a variação de diversos parâmetros, [clique aqui](https://desolate-lake-62973.herokuapp.com/). Mais informações sobre o código do simulador e seu desenvolvimento matemático também estão contido no link.")
+        st.write("Para mais informações sobre o desenvolvimento da modelagem, parametrização, análise, dados utilizados, dúvidas em geral, etc, entre em contato com caetano@cappra.com")    
+
         #st.title('Parâmetros utilizados:')
         #st.write('População inicial: ', N)
         #st.write('População inicial exposta ao vírus: ', E)
@@ -536,7 +543,6 @@ def main(IncubPeriod):
         #st.write('Taxa de propagação de infecções graves: ',round(b2*N,3))
         #st.write('Taxa de propagação de infecções críticas: ',round(b3*N,3))
         #st.subheader('Melhores familias de parâmetros que prevêem o modelo para a cidade')
-
         #st.table(parametros)
 
 if __name__ == "__main__":
