@@ -192,16 +192,21 @@ def main(IncubPeriod):
 
     
     st.title("Report da simulação do COVID-19")
-    dados = pd.read_csv('dados_cidades.csv',encoding = "ISO-8859-1")
-    cidade = st.selectbox("Selecione a cidade", ['Porto Alegre'])
+    st.write("Esse simulador utiliza o modelo epidêmico SEIR para modelar o crescimento do CODIV-19 nas cidades brasileiras, utilizando dados de casos graves, críticos e óbitos divulgados pelas secretarias de saúde.")
+    st.write("A subnotificação de casos e o baixo número de testes na população tem sido um problema para realizar a modelagem, obrigando os pesquisadores a fazerem extrapolações de casos para estimar o crescimento do vírus no Brasil. Tendo isso em vista, o modelo é parametrizado utilizando as notificações de casos hospitalizados, internados em UTI e óbitos, por serem os dados mais realistas divulgados pelas secretarias de saude. Com isso, podemos fazer extrapolações de diversos cenários da propagação do vírus, prevendo o que poderá acontecer com o sistema de saúde com e sem ações de distanciamento social e estimando a duração da propagação do vírus em nossas cidades.")
+    st.write("Poder realizar essa simulação com qualidade depende inteiramente de uma divulgação transparente e bem estruturada dos dados do COVID-19 e seus resultados são apenas tentativas de se aproximar da realidade do tamanho da infecção no Brasil. Como todo modelo, deve ser contextualizado e não deve ser levado como regra.")
+    dados = pd.read_csv('dados_cidades.csv', encoding = "ISO-8859-1")
+    st.subheader("Selecione a cidade:")
+    cidade = st.selectbox("", ['Porto Alegre'])
     parametros = pd.read_csv('parametros_cidades.csv')
     parametros = parametros[parametros['Cidade'] == cidade].sort_values('rmse')
     dados = dados.set_index('Cidade')
-    dados['População'] = dados['População']#.apply(lambda x: ''.join(x.split('.')))
+    dados['População'] = dados['População']
     N = int(dados.loc[cidade,'População'])
     st.table(pd.DataFrame(dados.loc[cidade,:].to_dict(), index = ['']))
     page = 'Report'
     if page == 'Report':
+        st.title("Monitoramento do COVID-19 em " + cidade)
         dados_casos = pd.read_csv('dados_cidades_2.csv')
         dados_casos = dados_casos[dados_casos['Cidade']==cidade].reset_index(drop = True).reset_index()  
         slot1 = st.empty()
@@ -259,9 +264,10 @@ def main(IncubPeriod):
         fig = px.line(df_[(~df_['Tipo'].isin(['Sucetíveis','Recuperados','Mortos'])) & (df_['Tempo (dias)'] >= 0)], x="Tempo (dias)", y='População', color = 'Tipo')
         fig_2 = px.line(df_[(df_['Tipo'].isin(['Sucetíveis','Recuperados','Mortos'])) & (df_['Tempo (dias)'] >= 0)], x="Tempo (dias)", y='População', color = 'Tipo')
         st.title('Simulação da progressão natural do COVID-19 em ' + cidade)
-        st.subheader('Curvas de infectados:')
+        st.write('O modelo é parametrizado baseado na quantidade ativa de casos graves (pacientes hospitalizados), casos críticos (pacientes internados em UTI) e óbitos. Sabemos sobre a subnotificação causada pela baixa quantidade de testes, mas para realizar uma extrapolação de casos leves, assintomáticos e expostos ao vírus, utilizamos dados de hospitalizados, internados em UTI e óbitos para minimizar o erro do modelo.')
+        st.subheader('Curvas de infectados do modelo parametrizado:')
         st.plotly_chart(fig)
-        st.subheader('Curvas de sucetíveis, recuperados e mortos:')
+        st.subheader('Curvas de sucetíveis, recuperados e mortos do modelo parametrizado:')
         st.plotly_chart(fig_2)
 
 
@@ -322,7 +328,7 @@ def main(IncubPeriod):
         df_aux = data.copy(deep = True)
         df_aux['População'] = df_aux['População'].apply(lambda x: str(round(x,2)) + '%')
         data = data.to_dict()['População']
-        st.table(pd.DataFrame(df_aux.to_dict()['População'], index = ['Percentagem da população']))
+        st.table(pd.DataFrame(df_aux.to_dict()['População'], index = ['Porcentagem da população']))
         fig = plt.figure(
             FigureClass=Waffle, 
             rows=5,
@@ -355,14 +361,17 @@ def main(IncubPeriod):
         
         st.title('Curvas de crescimento do COVID-19 em '+ cidade)
         st.subheader('Casos reais versus simulação')
+        st.write("Abaixo é possível visualizar as curvas de casos divulgados (em vermelho), separados em casos graves, críticos e óbitos, que são utilizadas para parametrizar o modelo, e as curvas da simulação (em azul), utilizadas para prever o crescimento do vírus.")
 
         st.subheader("Regressão de casos graves:")
+        st.write("Os casos graves são casos que necessitam de hospitalização imediata, sem a necessidade de ir para UTI ou utilizar respiradores.")
         
         df_ = df_.append(dados_casos[['Tempo (dias)','Inf. Grave','Inf. Crítico','Mortos','Sim']])
         fig = px.line(df_, x="Tempo (dias)", y='Inf. Grave', color = 'Sim')
         st.plotly_chart(fig)
         
         st.subheader("Regressão de casos críticos:")
+        st.write("Casos críticos são casos que devem ser priorizados para internação em UTI e utilizar respiradores.")
         
         fig = px.line(df_, x="Tempo (dias)", y='Inf. Crítico', color = 'Sim')
         st.plotly_chart(fig)
@@ -374,7 +383,8 @@ def main(IncubPeriod):
                 
         
         st.title("Capacidade do sistema de saúde e medidas de intervenção")
-        st.subheader("Os parametros de intervenção podem ser modificados no painel lateral")
+        st.write("Um dos principais objetivos da simulação é comparar o cenário atual de crescimento do vírus com um cenário onde há intervenções que reduzam a propagação do vírus, como distanciamento social, quarentena, uso de máscaras, entre outras medidas possíveis. Com reduções na transmissão do vírus, podemos encontrar cenários onde nosso sistema saúde pode ser capaz de lidar com o vírus sem o colapso e esgotamento de leitos hospitalares, de UTI ou respiradores ou cenários piores, onde somos capaz de reduzir a transmissão mas não o suficiente para evitar o colapso do sistema de saúde, necessitando a ampliação deste.")
+        st.write("Os parâmetros de redução de transmissão estão no painel lateral esquerdo. Nele, podemos selecionar o início e o fim das medidas de intervenção e em quanto  % será reduzida a transmissão de cada caso, além de poder aumentar ou diminuir o tempo da simulação.")
 
         AvailHospBeds= int(dados.loc[cidade,'Leitos Hospitalares Adulto'])
         AvailICUBeds=int(dados.loc[cidade,'Leitos UTI Adulto'])
@@ -507,27 +517,27 @@ def main(IncubPeriod):
             st.table(pd.DataFrame(lista_2, columns = ['Dias após primeiro caso','Quantidade de pessoas'],index = ['Casos leves','Casos graves','Casos críticos']))
         except:
             pass
-        st.title('Parâmetros utilizados:')
-        st.write('População inicial: ', N)
-        st.write('População inicial exposta ao vírus: ', E)
-        st.write('Periodo de incubação: ',IncubPeriod)
-        st.write('Duração de infecções leves: ',DurMildInf)
-        st.write('Duração de infecções graves: ',DurHosp)
-        st.write('Duração de infecções críticas:', TimeICUDeath)
-        st.write('Duração de infecções assintomáticas: ',DurAsym)
-        st.write('Fração de infecções assintomáticas: ',f)
-        st.write('Fração de infecções sintomáticas leves: ',round(FracMild*(1 - f),3))
-        st.write('Fração de infecções sintomáticas graves:',round(FracSevere*(1 - f),3))
-        st.write('Fração de infecções sintomáticas críticas: ',round(FracCritical*(1 - f),3))
-        st.write('Taxa de mortalidade de infecções críticas: ',ProbDeath)
-        st.write('Taxa de mortalidade geral: ',round(ProbDeath*FracCritical*(1 - f),3))
-        st.write('Taxa de propagação de infecções assintomáticas: ',round(b0*N,3))
-        st.write('Taxa de propagação de infecções leves: ',round(b1*N,3))
-        st.write('Taxa de propagação de infecções graves: ',round(b2*N,3))
-        st.write('Taxa de propagação de infecções críticas: ',round(b3*N,3))
-        st.subheader('Melhores familias de parâmetros que prevêem o modelo para a cidade')
+        #st.title('Parâmetros utilizados:')
+        #st.write('População inicial: ', N)
+        #st.write('População inicial exposta ao vírus: ', E)
+        #st.write('Periodo de incubação: ',IncubPeriod)
+        #st.write('Duração de infecções leves: ',DurMildInf)
+        #st.write('Duração de infecções graves: ',DurHosp)
+        #st.write('Duração de infecções críticas:', TimeICUDeath)
+        #st.write('Duração de infecções assintomáticas: ',DurAsym)
+        #st.write('Fração de infecções assintomáticas: ',f)
+        #st.write('Fração de infecções sintomáticas leves: ',round(FracMild*(1 - f),3))
+        #st.write('Fração de infecções sintomáticas graves:',round(FracSevere*(1 - f),3))
+        #st.write('Fração de infecções sintomáticas críticas: ',round(FracCritical*(1 - f),3))
+        #st.write('Taxa de mortalidade de infecções críticas: ',ProbDeath)
+        #st.write('Taxa de mortalidade geral: ',round(ProbDeath*FracCritical*(1 - f),3))
+        #st.write('Taxa de propagação de infecções assintomáticas: ',round(b0*N,3))
+        #st.write('Taxa de propagação de infecções leves: ',round(b1*N,3))
+        #st.write('Taxa de propagação de infecções graves: ',round(b2*N,3))
+        #st.write('Taxa de propagação de infecções críticas: ',round(b3*N,3))
+        #st.subheader('Melhores familias de parâmetros que prevêem o modelo para a cidade')
 
-        st.table(parametros)
+        #st.table(parametros)
 
 if __name__ == "__main__":
     main(IncubPeriod)
