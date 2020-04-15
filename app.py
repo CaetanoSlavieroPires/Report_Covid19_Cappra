@@ -128,31 +128,7 @@ def seir(y,t,a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f):
     
     return dy
 
-def new_growth_rate(g0,g1,g2,g3,p1,p2,b0,b1,b2,b3,u,a0,N,f): #Growth rate após o update
-    
-    JacobianMat=np.array([
-                 [-a0, 0, N*b0, N*b1, N*b2, N*b3, 0, 0],
-                 [a0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, -g0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, -p1-g1, 0, 0, 0, 0],
-                 [0, 0, 0, p1, -p2-g2, 0, 0, 0],
-                 [0, 0, 0, 0, p2, -u-g3, 0, 0],
-                 [0, 0, g0, g1, g2, g3 , 0, 0],
-                 [0, 0, 0, 0, 0, u, 0, 0]
-                ])
-    
-    eig = LA.eig(JacobianMat)
-    eigvalue = eig[0].real
-    eigvector = eig[1]
-    
-    r = max(eigvalue)
-    
-    MaxEigenVector=eigvector.T[np.argmax(eigvalue)]
-    MaxEigenVector=MaxEigenVector/MaxEigenVector[len(MaxEigenVector)-1]
-    MaxEigenVector=MaxEigenVector.real
-    DoublingTime=np.log(2)/r
-    
-    return r, DoublingTime
+
 
 
 def main(IncubPeriod):
@@ -197,8 +173,8 @@ def main(IncubPeriod):
     st.write("Poder realizar essa simulação com qualidade depende inteiramente de uma divulgação transparente e bem estruturada dos dados do COVID-19 e seus resultados são apenas tentativas de se aproximar da realidade do tamanho da infecção no Brasil. Como todo modelo, deve ser contextualizado e não deve ser levado como regra.")
     dados = pd.read_csv('dados_cidades.csv', encoding = "ISO-8859-1")
     st.subheader("Selecione a cidade:")
-    cidade = st.selectbox("", ['Porto Alegre'])
-    parametros = pd.read_csv('parametros_cidades.csv')
+    cidade = st.selectbox("", ['Porto Alegre','São Luís'])
+    parametros = pd.read_csv('parametros_cidades.csv', encoding = "ISO-8859-1")
     parametros = parametros[parametros['Cidade'] == cidade].sort_values('rmse')
     dados = dados.set_index('Cidade')
     dados['População'] = dados['População']
@@ -207,14 +183,14 @@ def main(IncubPeriod):
     page = 'Report'
     if page == 'Report':
         st.title("Monitoramento do COVID-19 em " + cidade)
-        dados_casos = pd.read_csv('dados_cidades_2.csv')
-        dados_casos = dados_casos[dados_casos['Cidade']==cidade].reset_index(drop = True).reset_index()  
+        dados_casos = pd.read_csv(cidade + '.csv', encoding = "ISO-8859-1")
+        dados_casos = dados_casos.reset_index(drop = True).reset_index()  
         slot1 = st.empty()
         st.subheader('Casos ativos em ' + cidade )
         dados_casos['index_aux'] = dados_casos['index']
         dados_casos['Sim'] = 'REAL'
-        dados_casos['Infectados'] = dados_casos['UTI'] + dados_casos['Ativos']
-        dados_casos_aux = dados_casos[['Casos','Infectados','Curado','Obitos']].tail(1)
+        dados_casos['Infectados'] = dados_casos['UTI'] + dados_casos['Enfermaria'] + dados_casos['Domiciliar']
+        dados_casos_aux = dados_casos[['Casos','Recuperados','Obitos']].tail(1)
         dados_casos_aux.index = ['']
         slot1.table(dados_casos_aux)
         fig = px.line(dados_casos, x="Data", y='Infectados')
@@ -234,7 +210,7 @@ def main(IncubPeriod):
 
         b2 = b2/N
         b3 = b2/N
-        n = 3
+        n = 0
         E = parametros.iloc[n,0]
         b0 = parametros.iloc[n,1]/N
         b1 = parametros.iloc[n,2]/N
@@ -349,7 +325,7 @@ def main(IncubPeriod):
 
         df_ = df__.copy(deep = True)
         dados_casos['Sim'] = 'Real'
-        dados_casos['Inf. Grave'] = dados_casos['Ativos']
+        dados_casos['Inf. Grave'] = dados_casos['Enfermaria']
         dados_casos['Inf. Crítico'] = dados_casos['UTI']
         dados_casos['Mortos'] = dados_casos['Obitos']
 
