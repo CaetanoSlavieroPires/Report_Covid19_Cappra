@@ -4,7 +4,6 @@ from scipy.integrate import odeint
 from numpy import linalg as LA
 import plotly.express as px
 from streamlit import caching
-from pywaffle import Waffle
 import matplotlib.pyplot as plt
 import itertools
 import plotly.graph_objects as go
@@ -144,10 +143,10 @@ def main(IncubPeriod):
         lista_b0 = [0.3,0.5,0.7,1]
         lista_b1 = [0.3,0.5,0.7,1]
         lista_f = [0.2]
-        lista_delay = [10]
+        lista_delay = [10,15,20]
         lista_f_grave = [0.2,0.25,0.3,0.4]
         lista_f_critico = [0.20,0.25,0.3]
-        lista_p_morte = [0.7,0.5,0.4]
+        lista_p_morte = [0.3,0.2]
         
         b2 = b2/N
         b3 = b2/N
@@ -183,7 +182,7 @@ def main(IncubPeriod):
             df_ = pd.DataFrame(soln, columns = names)
             df_['index'] = tvec
             df_aux = df_[(df_.index >= delay) & (df_.index < T+1)]
-            max = df_aux.shape[0]
+            max = df_aux.shape[0] - 5
             window = 6
             #st.write(max,max-window)
             

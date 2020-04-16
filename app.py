@@ -173,7 +173,7 @@ def main(IncubPeriod):
     st.write("Poder realizar essa simulação com qualidade depende inteiramente de uma divulgação transparente e bem estruturada dos dados do COVID-19 e seus resultados são apenas tentativas de se aproximar da realidade do tamanho da infecção no Brasil. Como todo modelo, deve ser contextualizado e não deve ser levado como regra.")
     dados = pd.read_csv('dados_cidades.csv', encoding = "ISO-8859-1")
     st.subheader("Selecione a cidade:")
-    cidade = st.selectbox("", ['Porto Alegre','São Luís'])
+    cidade = st.selectbox("", ['Porto Alegre','São Luís','Curitiba'])
     parametros = pd.read_csv('parametros_cidades.csv', encoding = "ISO-8859-1")
     parametros = parametros[parametros['Cidade'] == cidade].sort_values('rmse')
     dados = dados.set_index('Cidade')
