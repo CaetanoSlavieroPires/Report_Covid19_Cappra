@@ -530,7 +530,7 @@ def main(IncubPeriod):
             st.write('Comparamos os dados reais com os dados da simulação e aplicamos medidas de intervenção de distanciamento social na simulação.')
             st.write('É importante comparar cenários onde há distanciamento social e onde não há. Dessa forma podemos saber o impacto das medidas de distanciamento.')
             st.subheader('Casos reais versus simulação')
-            st.write("Abaixo é possível visualizar as curvas de casos divulgados (em vermelho), separados em casos graves, críticos e óbitos, que são utilizadas para parametrizar o modelo, e as curvas da simulação (em azul), utilizadas para prever o crescimento do vírus.")
+            st.write("Abaixo é possível visualizar as curvas de casos divulgados (em verde), separados em casos graves, críticos e óbitos, que são utilizadas para parametrizar o modelo, e as curvas da simulação sem intervenção (em azul) e com intervenção (em vermelho), utilizadas para prever o crescimento do vírus.")
 
             st.subheader("Regressão de casos graves:")
             st.write("Os casos graves são casos que necessitam de hospitalização imediata, sem a necessidade de ir para UTI ou utilizar respiradores.")
@@ -552,7 +552,7 @@ def main(IncubPeriod):
             
             st.title("Capacidade do sistema de saúde e medidas de intervenção")
             st.write("Um dos principais objetivos da simulação é comparar o cenário atual de crescimento do vírus com um cenário onde há intervenções que reduzam a propagação do vírus, como distanciamento social, quarentena, uso de máscaras, entre outras medidas possíveis. Com reduções na transmissão do vírus, podemos encontrar cenários onde nosso sistema saúde pode ser capaz de lidar com o vírus sem o colapso e esgotamento de leitos hospitalares, de UTI ou respiradores ou cenários piores, onde somos capaz de reduzir a transmissão mas não o suficiente para evitar o colapso do sistema de saúde, necessitando a ampliação deste.")
-            st.write("Nos gráficos, a curva azul são os casos da evolução do vírus sem as medidas de intervenção, enquanto a curva vermelha representa a evolução com intervenção. A curva verde, sempre constante, é ou quantidade de leitos hospitalares, ou a quatidades de vagas na UTI ou a quantidade de respiradores disponibilizados pela cidade, listados na primeira tabela do report. Nessa simulação está sendo considerada a quantidade total de leitos hospitalares e UTI e quantidade máxima de respiradores disponíveis. Para uma melhor comparação, deve ser considerada a quantidade de leitos e respiradores ocupados.")
+            st.write("Nos gráficos, a curva azul são os casos da evolução do vírus sem as medidas de intervenção, enquanto a curva vermelha representa a evolução com intervenção e em verde são os dados reais. A curva roxa, sempre constante, é ou quantidade de leitos hospitalares, ou a quatidades de vagas na UTI ou a quantidade de respiradores disponibilizados pela cidade, listados na primeira tabela do report. Nessa simulação está sendo considerada a quantidade total de leitos hospitalares e UTI e quantidade máxima de respiradores disponíveis. Para uma melhor comparação, deve ser considerada a quantidade de leitos e respiradores ocupados.")
 
             AvailHospBeds= int(dados.loc[cidade,'Leitos Hospitalares Adulto'])
             AvailICUBeds=int(dados.loc[cidade,'Leitos UTI Adulto'])
