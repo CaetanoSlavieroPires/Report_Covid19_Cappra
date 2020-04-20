@@ -51,7 +51,7 @@ def simulacao(TimeStart, TimeEnd, tmax, pop, N, a0, b0, b1, b2 , b3, b0Int, b1In
     TimeEnd = TimeEnd + delay
     tmax = tmax + delay
     if TimeEnd>TimeStart: #Se há intervenção
-            tvec = np.arange(0,TimeStart,1) #A simulação sem intervenção termina em t = TimeStart
+            tvec = np.arange(0,TimeStart+1,1) #A simulação sem intervenção termina em t = TimeStart
             sim_sem_int_1 = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
             pop = sim_sem_int_1[-1] #Salva a população atual
            #Criando DataFrame
@@ -59,7 +59,7 @@ def simulacao(TimeStart, TimeEnd, tmax, pop, N, a0, b0, b1, b2 , b3, b0Int, b1In
             df_sim_com_int['Tempo (dias)'] = tvec
             df_sim_com_int['Simulação'] = 'Com intervenção'            
                 #Simulação após o início da intervenção
-            tvec=np.arange(TimeStart,TimeEnd,1)
+            tvec=np.arange(TimeStart,TimeEnd+1,1)
             sim_com_int = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u, b0Int, b1Int, b2Int, b3Int,f))
             pop = sim_com_int[-1] #Salva população atual
             #Criando DataFrame
@@ -137,6 +137,24 @@ def model_city(tmax,TimeStart,TimeEnd,reduc1,reduc2,reduc3,reducasym):
     AvailHospBeds = st.number_input(label = 'Quantidade de leitos hospitalares', value = 1000)
     AvailICUBeds = st.number_input(label = 'Quantidade de leitos de UTI', value = 100)
     ConvVentCap = st.number_input(label = 'Quantidade de respiradores', value = 200)
+    st.sidebar.subheader('Tempo máximo da simulação em dias')
+    tmax = st.sidebar.slider("", min_value=0, max_value=1000, value=tmax, step=1)
+
+    st.sidebar.subheader("Parâmetros de intervenção e distanciamento social:")
+    TimeStart = st.sidebar.slider(label="Tempo de início da intervenção (dias)",min_value = 0, max_value = tmax, value = TimeStart, step = 1) 
+        #Fim da intervenção
+    TimeEnd = tmax
+
+    TimeEnd = st.sidebar.slider(label="Tempo de fim da intervenção (dias)", min_value = 0, max_value = tmax, value = TimeEnd, step = 1) 
+    #Redução da transmissão de assintomáticos
+    reducasym = st.sidebar.slider("Redução na transmissão causada por infecções assintomáticas (%)", min_value=0, max_value=100, value=int(reducasym*100), step = 1)/100
+        #Taxa de transmissão (infecções leves)
+    reduc1 = st.sidebar.slider("Redução na transmissão causada por infecções leves (%)", min_value=0, max_value=100, value=int(reduc1*100), step=1)/100   
+        #Taxa de transmissão (infecções graves, relativa a infecção leve)
+    reduc2 = st.sidebar.slider("Redução na transmissão causada por infecções graves (%)", min_value=0, max_value=100, value=int(reduc2*100), step=1)/100 
+        #Taxa de transmissão (infecções críticas, relativa a infecção leve)
+    reduc3 = st.sidebar.slider("Redução na transmissão causada por infecções críticas (%)", min_value=0, max_value=100, value=int(reduc3*100), step=1)/100
+
     IncubPeriod = 5
     DurMildInf = 6
     TimeICUDeath = 8
@@ -298,7 +316,7 @@ def model_city(tmax,TimeStart,TimeEnd,reduc1,reduc2,reduc3,reducasym):
     
 def main(IncubPeriod):
     pic = "https://images.squarespace-cdn.com/content/5c4ca9b7cef372b39c3d9aab/1575161958793-CFM6738ESA4DNTKF0SQI/CAPPRA_PRIORITARIO_BRANCO.png?content-type=image%2Fpng"
-    st.sidebar.image(pic, use_column_width=False, width=100, caption=None)
+    st.image(pic, use_column_width=False, width=100, caption=None)
     
     #Definindo valores padrões dos parâmetros
     IncubPeriod = 5
@@ -317,21 +335,6 @@ def main(IncubPeriod):
     reduc3 = 0.5
     reducasym = 0.5
     
-    st.sidebar.subheader('Tempo máximo da simulação em dias')
-    tmax = st.sidebar.slider("", min_value=0, max_value=1000, value=tmax, step=1)
-
-    st.sidebar.subheader("Parâmetros de intervenção e distanciamento social:")
-    TimeStart = st.sidebar.slider(label="Tempo de início da intervenção (dias)",min_value = 0, max_value = tmax, value = TimeStart, step = 1) 
-        #Fim da intervenção
-    TimeEnd = st.sidebar.slider(label="Tempo de fim da intervenção (dias)", min_value = 0, max_value = tmax, value = TimeEnd, step = 1) 
-    #Redução da transmissão de assintomáticos
-    reducasym = st.sidebar.slider("Redução na transmissão causada por infecções assintomáticas (%)", min_value=0, max_value=100, value=int(reducasym*100), step = 1)/100
-        #Taxa de transmissão (infecções leves)
-    reduc1 = st.sidebar.slider("Redução na transmissão causada por infecções leves (%)", min_value=0, max_value=100, value=int(reduc1*100), step=1)/100   
-        #Taxa de transmissão (infecções graves, relativa a infecção leve)
-    reduc2 = st.sidebar.slider("Redução na transmissão causada por infecções graves (%)", min_value=0, max_value=100, value=int(reduc2*100), step=1)/100 
-        #Taxa de transmissão (infecções críticas, relativa a infecção leve)
-    reduc3 = st.sidebar.slider("Redução na transmissão causada por infecções críticas (%)", min_value=0, max_value=100, value=int(reduc3*100), step=1)/100
 
     
     st.title("Report da simulação do COVID-19")
@@ -378,6 +381,11 @@ def main(IncubPeriod):
             fig = px.line(dados_casos_aux, x='Data',y = 'Quantidade', color = 'Tipo')
             st.plotly_chart(fig)
             
+            dados_casos['Sim'] = 'Real'
+            dados_casos['Inf. Grave'] = dados_casos['Enfermaria']
+            dados_casos['Inf. Crítico'] = dados_casos['UTI']
+            dados_casos['Mortos'] = dados_casos['Obitos']
+            dados_casos['Tempo (dias)'] = dados_casos['index_aux']
 
             b2 = b2/N
             b3 = b2/N
@@ -391,6 +399,8 @@ def main(IncubPeriod):
             FracMild = 1 - FracSevere - FracCritical
             delay = parametros.iloc[n,6]
             ProbDeath = parametros.iloc[n,7]
+            reduc = parametros.iloc[n,10]
+            TimeStart = parametros.iloc[n,11]
             CFR = FracCritical*ProbDeath
             
             a0, u, g0, g1, g2, g3, p1, p2, f = params(IncubPeriod, FracMild, FracCritical, FracSevere, TimeICUDeath, CFR, DurMildInf, DurHosp, i, FracAsym, DurAsym, N)
@@ -399,17 +409,37 @@ def main(IncubPeriod):
             pop[0] = N - E
             pop[1] = E
             
-            
             tvec = np.arange(0,tmax+delay,1)
             soln = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
             names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
             
             df_ = pd.DataFrame(soln, columns = names)
             df_['Tempo (dias)'] = tvec - delay
+
+            #Calculo das taxas de transmissão durante a intervenção
+            b1Int = b1*(1 - reduc)
+            b2Int = b2*(1 - 0.99)
+            b3Int = b3*(1 - 0.99)
+            b0Int = b0*(1 - reduc)
+
+            names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
+
+    #########  Simulação sem intervenção #########################################################
+            df_sim_sem_int = df_
+            df_sim_sem_int['Sim'] = 'Sem intervenção'
+    #############################################################################################
+            
+            #Simulação com intervenção
+            df_sim_com_int = simulacao(TimeStart, TimeEnd, tmax, pop, N, a0, b0, b1, b2 , b3, b0Int, b1Int, b2Int, b3Int, g0, g1, g2, g3, p1, p2, u, names, f, delay)
+            df_sim_com_int['Tempo (dias)'] = df_sim_com_int['Tempo (dias)'] - delay
+            df_sim_com_int['Sim'] = 'Com intervenção'
+            y_index = 'Número de pessoas'  
+            df = df_sim_sem_int.append(df_sim_com_int).append(dados_casos[['Tempo (dias)','Inf. Grave','Inf. Crítico','Mortos','Sim']])
+
             df__ = df_.copy(deep = True)
-            df_ = pd.melt(df_,id_vars = ['Tempo (dias)'], var_name='Tipo', value_name='População')
-            fig = px.line(df_[(~df_['Tipo'].isin(['Sucetíveis','Recuperados','Mortos'])) & (df_['Tempo (dias)'] >= 0)], x="Tempo (dias)", y='População', color = 'Tipo')
-            fig_2 = px.line(df_[(df_['Tipo'].isin(['Sucetíveis','Recuperados','Mortos'])) & (df_['Tempo (dias)'] >= 0)], x="Tempo (dias)", y='População', color = 'Tipo')
+            df__ = pd.melt(df__,id_vars = ['Tempo (dias)'], var_name='Tipo', value_name='População')
+            fig = px.line(df__[(~df__['Tipo'].isin(['Sucetíveis','Recuperados','Mortos'])) & (df__['Tempo (dias)'] >= 0)], x="Tempo (dias)", y='População', color = 'Tipo')
+            fig_2 = px.line(df__[(df__['Tipo'].isin(['Sucetíveis','Recuperados','Mortos'])) & (df__['Tempo (dias)'] >= 0)], x="Tempo (dias)", y='População', color = 'Tipo')
             st.title('Simulação da progressão natural do COVID-19 em ' + cidade)
             st.write('O modelo é parametrizado baseado na quantidade ativa de casos graves (pacientes hospitalizados), casos críticos (pacientes internados em UTI) e óbitos. Sabemos sobre a subnotificação causada pela baixa quantidade de testes, mas para realizar uma extrapolação de casos leves, assintomáticos e expostos ao vírus, utilizamos dados de hospitalizados, internados em UTI e óbitos para minimizar o erro do modelo.')
             st.subheader('Curvas de infectados do modelo parametrizado:')
@@ -417,12 +447,11 @@ def main(IncubPeriod):
             st.subheader('Curvas de sucetíveis, recuperados e mortos do modelo parametrizado:')
             st.plotly_chart(fig_2)
 
-
             data_aux = dados_casos['index_aux'].max()
             st.title('Estimativa para a progressão do COVID-19 em ' + cidade)
             st.subheader('Visualizando como estará distribuída a infecção em toda a população da cidade')
             st.subheader('Estimativa para daqui 7 dias:')
-            data = (df_[(df_['Tipo'].isin(["Sucetíveis","Expostos",'Recuperados','Mortos','Inf. Crítico','Inf. Grave','Assintomáticos', 'Inf. Leve'])) & (df_['Tempo (dias)'] == data_aux + 7)][['Tipo','População']].set_index('Tipo')/N*100)
+            data = (df__[(df__['Tipo'].isin(["Sucetíveis","Expostos",'Recuperados','Mortos','Inf. Crítico','Inf. Grave','Assintomáticos', 'Inf. Leve'])) & (df__['Tempo (dias)'] == data_aux + 7)][['Tipo','População']].set_index('Tipo')/N*100)
             df_aux = data.copy(deep = True)
             df_aux['População'] = df_aux['População'].apply(lambda x: str(round(x,2)) + '%')
             data = data.to_dict()['População']
@@ -447,7 +476,7 @@ def main(IncubPeriod):
             st.pyplot()
             
             st.subheader('Estimativa para daqui 30 dias:')
-            data = (df_[(df_['Tipo'].isin(["Sucetíveis","Expostos",'Recuperados','Mortos','Inf. Crítico','Inf. Grave','Assintomáticos', 'Inf. Leve'])) & (df_['Tempo (dias)'] == data_aux + 30)][['Tipo','População']].set_index('Tipo')/N*100)
+            data = (df__[(df__['Tipo'].isin(["Sucetíveis","Expostos",'Recuperados','Mortos','Inf. Crítico','Inf. Grave','Assintomáticos', 'Inf. Leve'])) & (df__['Tempo (dias)'] == data_aux + 30)][['Tipo','População']].set_index('Tipo')/N*100)
             df_aux = data.copy(deep = True)
             df_aux['População'] = df_aux['População'].apply(lambda x: str(round(x,2)) + '%')
             data = data.to_dict()['População']
@@ -471,7 +500,7 @@ def main(IncubPeriod):
             st.pyplot()
             
             st.subheader('Estimativa para o fim da simulação:')
-            data = (df_[(df_['Tipo'].isin(["Sucetíveis",'Recuperados','Mortos'])) & (df_['Tempo (dias)'] == df_['Tempo (dias)'].max())][['Tipo','População']].set_index('Tipo')/N*100)
+            data = (df__[(df__['Tipo'].isin(["Sucetíveis",'Recuperados','Mortos'])) & (df__['Tempo (dias)'] == df__['Tempo (dias)'].max())][['Tipo','População']].set_index('Tipo')/N*100)
             df_aux = data.copy(deep = True)
             df_aux['População'] = df_aux['População'].apply(lambda x: str(round(x,2)) + '%')
             data = data.to_dict()['População']
@@ -494,18 +523,9 @@ def main(IncubPeriod):
             plt.show()
             st.pyplot()
 
-            df_ = df__.copy(deep = True)
-            dados_casos['Sim'] = 'Real'
-            dados_casos['Inf. Grave'] = dados_casos['Enfermaria']
-            dados_casos['Inf. Crítico'] = dados_casos['UTI']
-            dados_casos['Mortos'] = dados_casos['Obitos']
 
-            df_ = df_[['Inf. Grave','Inf. Crítico','Mortos']]
-            df_['Tempo (dias)'] =  tvec - delay
-            df_['Sim'] = 'Regressão'
-            dados_casos['Tempo (dias)'] = dados_casos['index_aux']
-            df_ = df_[(df_['Tempo (dias)'] >= 0) & (df_['Tempo (dias)'] < dados_casos['Tempo (dias)'].max() + 10)]
-            
+            df_ = df[(df['Tempo (dias)'] >= 0) & (df['Tempo (dias)'] < dados_casos['Tempo (dias)'].max() + 10)].copy(deep = True)
+
             st.title('Curvas de crescimento do COVID-19 em '+ cidade)
             st.subheader('Casos reais versus simulação')
             st.write("Abaixo é possível visualizar as curvas de casos divulgados (em vermelho), separados em casos graves, críticos e óbitos, que são utilizadas para parametrizar o modelo, e as curvas da simulação (em azul), utilizadas para prever o crescimento do vírus.")
@@ -513,7 +533,6 @@ def main(IncubPeriod):
             st.subheader("Regressão de casos graves:")
             st.write("Os casos graves são casos que necessitam de hospitalização imediata, sem a necessidade de ir para UTI ou utilizar respiradores.")
             
-            df_ = df_.append(dados_casos[['Tempo (dias)','Inf. Grave','Inf. Crítico','Mortos','Sim']])
             fig = px.line(df_, x="Tempo (dias)", y='Inf. Grave', color = 'Sim')
             st.plotly_chart(fig)
             
@@ -531,81 +550,51 @@ def main(IncubPeriod):
             
             st.title("Capacidade do sistema de saúde e medidas de intervenção")
             st.write("Um dos principais objetivos da simulação é comparar o cenário atual de crescimento do vírus com um cenário onde há intervenções que reduzam a propagação do vírus, como distanciamento social, quarentena, uso de máscaras, entre outras medidas possíveis. Com reduções na transmissão do vírus, podemos encontrar cenários onde nosso sistema saúde pode ser capaz de lidar com o vírus sem o colapso e esgotamento de leitos hospitalares, de UTI ou respiradores ou cenários piores, onde somos capaz de reduzir a transmissão mas não o suficiente para evitar o colapso do sistema de saúde, necessitando a ampliação deste.")
-            st.write("Os parâmetros de redução de transmissão estão no painel lateral esquerdo. Nele, podemos selecionar o início e o fim das medidas de intervenção e em quanto  % será reduzida a transmissão de cada caso, além de poder aumentar ou diminuir o tempo da simulação.")
             st.write("Nos gráficos, a curva azul são os casos da evolução do vírus sem as medidas de intervenção, enquanto a curva vermelha representa a evolução com intervenção. A curva verde, sempre constante, é ou quantidade de leitos hospitalares, ou a quatidades de vagas na UTI ou a quantidade de respiradores disponibilizados pela cidade, listados na primeira tabela do report. Nessa simulação está sendo considerada a quantidade total de leitos hospitalares e UTI e quantidade máxima de respiradores disponíveis. Para uma melhor comparação, deve ser considerada a quantidade de leitos e respiradores ocupados.")
 
             AvailHospBeds= int(dados.loc[cidade,'Leitos Hospitalares Adulto'])
             AvailICUBeds=int(dados.loc[cidade,'Leitos UTI Adulto'])
             ConvVentCap=int(dados.loc[cidade,'Número de Respiradores'])
 
-            #Calculo das taxas de transmissão durante a intervenção
-            b1Int = b1*(1 - reduc1)
-            b2Int = b2*(1 - reduc2)
-            b3Int = b3*(1 - reduc3)
-            b0Int = b0*(1 - reducasym)
-
-            names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
-
-    #########  Simulação sem intervenção #########################################################
-            tvec=np.arange(0,tmax + delay,1)
-            sim_sem_int = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
-            #Criando dataframe
-            df_sim_sem_int = pd.DataFrame(sim_sem_int, columns = names)
-            df_sim_sem_int['Tempo (dias)'] = tvec
-            df_sim_sem_int['Tempo (dias)'] = df_sim_sem_int['Tempo (dias)'] - delay
-            df_sim_sem_int['Simulação'] = 'Sem intervenção'
-    #############################################################################################
-            
-            #Simulação com intervenção
-            df_sim_com_int = simulacao(TimeStart, TimeEnd, tmax, pop, N, a0, b0, b1, b2 , b3, b0Int, b1Int, b2Int, b3Int, g0, g1, g2, g3, p1, p2, u, names, f, delay)
-            df_sim_com_int['Tempo (dias)'] = df_sim_com_int['Tempo (dias)'] - delay
-            y_index = 'Número de pessoas'  
-
-                
-            st.subheader('Casos graves e críticos vs Leitos de hospital + UTI')
-            df_sim_com_int[y_index] = df_sim_com_int["Inf. Grave"] + df_sim_com_int["Inf. Crítico"]
-            df_sim_sem_int[y_index] = df_sim_sem_int["Inf. Grave"] + df_sim_sem_int["Inf. Crítico"]
-            df = df_sim_sem_int[['Tempo (dias)',y_index, 'Simulação']].append(df_sim_com_int[['Tempo (dias)',y_index, 'Simulação']])
     ####################################################################################################
 
             #Gráficos da capacidade hospitalar################################################################    
-        
+            st.subheader('Infecções críticas e graves vs Capacidade hospitalar e Leitos de UTI')
+            df_ = df.copy(deep = True)
             data1 = []
+            y_index = 'Número de pessoas'
             for x in range(0, tmax):
                 data1.append([x,'Leitos hospitalares + UTI',AvailHospBeds + AvailICUBeds])
-                    
-            df = df.append(pd.DataFrame(data1, columns = ['Tempo (dias)','Simulação',y_index]))
-            fig = px.line(df[df['Tempo (dias)'] >=0], x="Tempo (dias)", y=y_index, color = 'Simulação')
+            df_[y_index] = df_['Inf. Grave'] + df_['Inf. Crítico']
+
+            df_ = df_.append(pd.DataFrame(data1, columns = ['Tempo (dias)','Sim', y_index]))
+
+            fig = px.line(df_[df_['Tempo (dias)'] >=0], x="Tempo (dias)", y=y_index, color = 'Sim')
             st.plotly_chart(fig)
                 
 
             st.subheader('Infecções críticas vs Leitos na UTI')
-            df_sim_com_int[y_index] = df_sim_com_int["Inf. Crítico"]
-            df_sim_sem_int[y_index] = df_sim_sem_int["Inf. Crítico"]
-            df = df_sim_sem_int[['Tempo (dias)',y_index, 'Simulação']].append(df_sim_com_int[['Tempo (dias)',y_index, 'Simulação']])
-                        
+            df_ = df.copy(deep = True)
+            df_[y_index] = df_['Inf. Crítico']
+                
             data1 = []
             for x in range(0, tmax):
                 data1.append([x,'Leitos da UTI',AvailICUBeds])
                     
-            df = df.append(pd.DataFrame(data1, columns = ['Tempo (dias)','Simulação',y_index]))
-            fig = px.line(df[df['Tempo (dias)'] >=0], x="Tempo (dias)", y=y_index, color = 'Simulação')
+            df_ = df_.append(pd.DataFrame(data1, columns = ['Tempo (dias)','Sim',y_index]))
+            fig = px.line(df_[df_['Tempo (dias)'] >=0], x="Tempo (dias)", y=y_index, color = 'Sim')
             st.plotly_chart(fig)
             
             st.subheader('Infecções críticas vs Número de respiradores')
-            df_sim_com_int[y_index] = df_sim_com_int["Inf. Crítico"]
-            df_sim_sem_int[y_index] = df_sim_sem_int["Inf. Crítico"]
-            df = df_sim_sem_int[['Tempo (dias)',y_index, 'Simulação']].append(df_sim_com_int[['Tempo (dias)',y_index, 'Simulação']])
-                
+            df_ = df.copy(deep = True) 
+            df_[y_index] = df_['Inf. Crítico'] 
             data1 = []
-            data2 = []
-            data3 = []
             for x in range(0, tmax):
                 data1.append([x,'Respiradores',ConvVentCap])
          
-            df = df.append(pd.DataFrame(data1, columns = ['Tempo (dias)','Simulação',y_index]))
+            df_ = df_.append(pd.DataFrame(data1, columns = ['Tempo (dias)','Sim',y_index]))
             
-            fig = px.line(df[df['Tempo (dias)'] >=0], x="Tempo (dias)", y=y_index, color = 'Simulação')
+            fig = px.line(df_[df_['Tempo (dias)'] >=0], x="Tempo (dias)", y=y_index, color = 'Sim')
             st.plotly_chart(fig)
             
             st.subheader("Data do colapso do sistema de saúde após o primeiro caso")
