@@ -1,0 +1,6 @@
+Leitos hospitalares: http://tabnet.datasus.gov.br/cgi/tabcgi.exe?cnes/cnv/leiintbr.def
+Leitos UTI: http://cnes2.datasus.gov.br/Mod_Ind_Tipo_Leito.asp?VEstado=42&VMun=420540
+Equipamentos hospitalar: http://cnes2.datasus.gov.br/Mod_Ind_Equipamento.asp?VEstado=42&VMun=420890&VComp=202002
+
+Cidades:
+Porto Alegre: http://www2.portoalegre.rs.gov.br/sms/default.php?p_secao=1027

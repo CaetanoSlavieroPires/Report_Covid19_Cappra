@@ -83,9 +83,7 @@ def seir(y,t,a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f):
     return dy
 
 def main(IncubPeriod):
-    pic = "https://images.squarespace-cdn.com/content/5c4ca9b7cef372b39c3d9aab/1575161958793-CFM6738ESA4DNTKF0SQI/CAPPRA_PRIORITARIO_BRANCO.png?content-type=image%2Fpng"
-    st.sidebar.image(pic, use_column_width=False, width=100, caption=None)
-    
+
     #Definindo valores padrões dos parâmetros
     IncubPeriod = 5
     DurMildInf = 6
@@ -95,7 +93,7 @@ def main(IncubPeriod):
     ProbDeath = 0.5
     TimeICUDeath = 8
     DurHosp = 6
-    tmax = 365
+    tmax = 32
     i = 1
     TimeStart = 0
     TimeEnd = tmax
@@ -111,21 +109,6 @@ def main(IncubPeriod):
     reduc3 = 0.5
     reducasym = 0.5
     
-    tmax = st.sidebar.slider("Tempo máximo da simulação em dias", min_value=0, max_value=1000, value=tmax, step=1)
-
-    TimeStart = st.sidebar.slider(label="Tempo de início da intervenção (dias)",min_value = 0, max_value = tmax, value = TimeStart, step = 1) 
-        #Fim da intervenção
-    TimeEnd = st.sidebar.slider(label="Tempo de fim da intervenção (dias)", min_value = 0, max_value = tmax, value = TimeEnd, step = 1) 
-    #Redução da transmissão de assintomáticos
-    reducasym = st.sidebar.slider("Redução na transmissão causada por infecções assintomáticas (%)", min_value=0, max_value=100, value=int(reducasym*100), step = 1)/100
-        #Taxa de transmissão (infecções leves)
-    reduc1 = st.sidebar.slider("Redução na transmissão causada por infecções leves (%)", min_value=0, max_value=100, value=int(reduc1*100), step=1)/100   
-        #Taxa de transmissão (infecções graves, relativa a infecção leve)
-    reduc2 = st.sidebar.slider("Redução na transmissão causada por infecções graves (%)", min_value=0, max_value=100, value=int(reduc2*100), step=1)/100 
-        #Taxa de transmissão (infecções críticas, relativa a infecção leve)
-    reduc3 = st.sidebar.slider("Redução na transmissão causada por infecções críticas (%)", min_value=0, max_value=100, value=int(reduc3*100), step=1)/100
-
-    
     st.title("Report da simulação do COVID-19")
     dados = pd.read_csv('dados_cidades.csv',encoding = "ISO-8859-1")
     cidade = st.selectbox("Selecione a cidade", list(dados['Cidade']))
@@ -139,22 +122,23 @@ def main(IncubPeriod):
         dados_casos = dados_casos.reset_index(drop = True).reset_index()  
         dados_casos['index_aux'] = dados_casos['index']
         dados_casos['Sim'] = 'REAL'
-        lista_expostos = [1,5,10]
+        lista_expostos = [1]
         lista_b0 = [0.3,0.5,0.7,1]
         lista_b1 = [0.3,0.5,0.7,1]
         lista_f = [0.2]
-        lista_delay = [10,15,20]
+        lista_delay = [10,15]
         lista_f_grave = [0.2,0.25,0.3,0.4]
         lista_f_critico = [0.20,0.25,0.3]
-        lista_p_morte = [0.3,0.2]
+        lista_p_morte = [0.1]
         
         b2 = b2/N
         b3 = b2/N
         
         erro = pd.DataFrame(itertools.product(lista_expostos,lista_b0,lista_b1, lista_f, lista_f_grave, lista_f_critico, lista_delay, lista_p_morte), columns = ['E','b0','b1','f','f_grave','f_critico','delay','p_morte'])
-        
+        maxs = 16
+        window = 16
         ################### Encontra parâmetros que minimiza o erro do modelo em relação aos dados reais #############
-        def rmse_calc(x):
+        def rmse_calc(x, maxs, windows):
             E = x['E'] #Expostos iniciais
             b0 = x['b0']/N #Taxa de transmissão assintomática 
             b1 = x['b1']/N #Taxa de transmissão inf.leve
@@ -181,26 +165,24 @@ def main(IncubPeriod):
             names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
             df_ = pd.DataFrame(soln, columns = names)
             df_['index'] = tvec
-            df_aux = df_[(df_.index >= delay) & (df_.index < T+1)]
-            max = df_aux.shape[0] - 5
-            window = 6
+            df_aux = df_[(df_.index >= delay) & (df_.index < T+1)].reset_index(drop = True)
             #st.write(max,max-window)
             
             MSE_dom =0# mean_squared_error(y_true = (dados_casos['Domiciliar']), y_pred = (df_aux['Inf. Crítico']))
-            MSE_crit = mean_squared_error(y_true = (dados_casos['UTI'][max-window:]), y_pred = (df_aux['Inf. Crítico'][max-window:]))
-            MSE_grave = mean_squared_error(y_true = (dados_casos['Enfermaria'][max-window:]), y_pred = (df_aux['Inf. Grave'][max-window:]))
-            MSE_mortos = mean_squared_error(y_true = (dados_casos['Obitos'][max-window:]), y_pred = (df_aux['Mortos'][max-window:]))
+            MSE_crit = mean_squared_error(y_true = (dados_casos['UTI'][maxs-window:maxs]), y_pred = (df_aux['Inf. Crítico'][maxs-window:maxs]))
+            MSE_grave = 0#mean_squared_error(y_true = (dados_casos['Enfermaria'][maxs-window:maxs]), y_pred = (df_aux['Inf. Grave'][maxs-window:maxs]))
+            MSE_mortos = 0#mean_squared_error(y_true = (dados_casos['Obitos'][maxs-window:maxs]), y_pred = (df_aux['Mortos'][maxs-window:maxs]))
 
-            return np.array([round(MSE_dom**(0.5),1),round(MSE_grave**(0.5),1), round(MSE_crit**(0.5),1), round(MSE_mortos**(0.5),1)])
+            return np.array([round(MSE_dom**(0.5),1),round(MSE_grave**(0.5),1), round(MSE_crit**(0.5),4), round(MSE_mortos**(0.5),1)])
         
         
-        erro['rmse_list'] = erro.apply(lambda x: rmse_calc(x),axis = 1)
+        erro['rmse_list'] = erro.apply(lambda x: rmse_calc(x,maxs,window),axis = 1)
         erro['rmse'] = erro['rmse_list'].apply(np.sum)
         st.write(erro.sort_values('rmse'))
         st.write(erro.shape)
-        parametros = erro.reset_index(drop = True).sort_values('rmse').reset_index(drop = True).head(6)
+        parametros = erro.reset_index(drop = True).sort_values('rmse').reset_index(drop = True).head(10)
 
-        for k in range(0,5):
+        for k in range(0,10):
             st.title('---------------------------------------------------')
             st.subheader('Familia de parâmetros '+str(k))
             E = parametros.iloc[k,0]
