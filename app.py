@@ -448,7 +448,7 @@ def main(IncubPeriod):
             st.plotly_chart(fig_2)
 
             data_aux = dados_casos['index_aux'].max()
-            st.title('Estimativa para a progressão do COVID-19 em ' + cidade)
+            st.title('Estimativa para a progressão do COVID-19 em ' + cidade + ' se não houver distanciamento social')
             st.subheader('Visualizando como estará distribuída a infecção em toda a população da cidade')
             st.subheader('Estimativa para daqui 7 dias:')
             data = (df__[(df__['Tipo'].isin(["Sucetíveis","Expostos",'Recuperados','Mortos','Inf. Crítico','Inf. Grave','Assintomáticos', 'Inf. Leve'])) & (df__['Tempo (dias)'] == data_aux + 7)][['Tipo','População']].set_index('Tipo')/N*100)
@@ -526,7 +526,9 @@ def main(IncubPeriod):
 
             df_ = df[(df['Tempo (dias)'] >= 0) & (df['Tempo (dias)'] < dados_casos['Tempo (dias)'].max() + 10)].copy(deep = True)
 
-            st.title('Curvas de crescimento do COVID-19 em '+ cidade)
+            st.title('Curvas de crescimento do COVID-19 em '+ cidade + ' com e sem distanciamento')
+            st.write('Comparamos os dados reais com os dados da simulação e aplicamos medidas de intervenção de distanciamento social na simulação.')
+            st.write('É importante comparar cenários onde há distanciamento social e onde não há. Dessa forma podemos saber o impacto das medidas de distanciamento.')
             st.subheader('Casos reais versus simulação')
             st.write("Abaixo é possível visualizar as curvas de casos divulgados (em vermelho), separados em casos graves, críticos e óbitos, que são utilizadas para parametrizar o modelo, e as curvas da simulação (em azul), utilizadas para prever o crescimento do vírus.")
 
