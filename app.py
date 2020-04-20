@@ -344,7 +344,7 @@ def main(IncubPeriod):
     st.write("Mais análises do COVID-19 feitas pelos cientistas da Cappra podem ser encontrados em [https://www.cappra.co/lab-covid](https://www.cappra.co/lab-covid).")
     dados = pd.read_csv('dados_cidades.csv', encoding = "ISO-8859-1")
     st.subheader("Selecione a cidade:")
-    cidade = st.selectbox("", ['Porto Alegre','São Luís','Curitiba','Modelar cidade'])
+    cidade = st.selectbox("", ['Porto Alegre','São Luís','Curitiba','Jaraguá do Sul','Modelar cidade'])
     if cidade != 'Modelar cidade':
         parametros = pd.read_csv('parametros_cidades.csv', encoding = "ISO-8859-1")
         parametros = parametros[parametros['Cidade'] == cidade].sort_values('rmse')
@@ -441,7 +441,7 @@ def main(IncubPeriod):
             df__ = pd.melt(df__,id_vars = ['Tempo (dias)'], var_name='Tipo', value_name='População')
             fig = px.line(df__[(~df__['Tipo'].isin(['Sucetíveis','Recuperados','Mortos'])) & (df__['Tempo (dias)'] >= 0)], x="Tempo (dias)", y='População', color = 'Tipo')
             fig_2 = px.line(df__[(df__['Tipo'].isin(['Sucetíveis','Recuperados','Mortos'])) & (df__['Tempo (dias)'] >= 0)], x="Tempo (dias)", y='População', color = 'Tipo')
-            st.title('Simulação da progressão natural do COVID-19 em ' + cidade)
+            st.title('Simulação da progressão natural do COVID-19 em ' + cidade + ' se não houver distanciamento social')
             st.write('O modelo é parametrizado baseado na quantidade ativa de casos graves (pacientes hospitalizados), casos críticos (pacientes internados em UTI) e óbitos. Sabemos sobre a subnotificação causada pela baixa quantidade de testes, mas para realizar uma extrapolação de casos leves, assintomáticos e expostos ao vírus, utilizamos dados de hospitalizados, internados em UTI e óbitos para minimizar o erro do modelo.')
             st.subheader('Curvas de infectados do modelo parametrizado:')
             st.plotly_chart(fig)
