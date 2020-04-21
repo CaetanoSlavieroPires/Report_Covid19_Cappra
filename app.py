@@ -344,7 +344,7 @@ def main(IncubPeriod):
     st.write("Mais análises do COVID-19 feitas pelxs cientistas da Cappra podem ser encontradas em [https://www.cappra.co/lab-covid](https://www.cappra.co/lab-covid).")
     dados = pd.read_csv('dados_cidades.csv', encoding = "ISO-8859-1")
     st.subheader("Selecione a cidade:")
-    cidade = st.selectbox("", ['Porto Alegre','São Luís','Curitiba','Passo Fundo','Jaraguá do Sul','Modelar cidade'])
+    cidade = st.selectbox("", ['Porto Alegre','São Luís','Curitiba','Passo Fundo','Jaraguá do Sul','Caxias do Sul','Foz do Iguaçu','Modelar cidade'])
     if cidade != 'Modelar cidade':
         parametros = pd.read_csv('parametros_cidades.csv', encoding = "ISO-8859-1")
         parametros = parametros[parametros['Cidade'] == cidade].sort_values('rmse')
