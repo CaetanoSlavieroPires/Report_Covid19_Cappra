@@ -9,3 +9,7 @@ Porto Alegre: http://www2.portoalegre.rs.gov.br/sms/default.php?p_secao=1027
 Jaragua do Sul: https://www.jaraguadosul.sc.gov.br/noticias.php?page=1
 Passo Fundo: http://www.pmpf.rs.gov.br/interna.php?t=5&co=157&p=1008
 Passo Fundo: https://diariodamanha.com/page/1/?s=coronavírus&post_type=post
+São Luís: http://www.saude.ma.gov.br/boletins-covid-19/
+Caxias do Sul:https://www.instagram.com/saudecaxiasdosul/
+Foz do Iguaçu: https://www.amn.foz.br/posts/?ct=Not%C3%ADcias&page=1
+Curitiba: http://www.saude.curitiba.pr.gov.br/noticias.html?limitstart=0
