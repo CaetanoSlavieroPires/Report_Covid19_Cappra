@@ -426,12 +426,15 @@ def main(IncubPeriod):
                     tvec = np.arange(TimeStart,tmax,1)
                     T_2 = TimeStart
 
-                elif descr == "Com o fim do distanciamento social":
-                    pop = soln[dados_casos['index_aux'].max() - T_2]
+                else:
+                    pop = soln_aux[dados_casos['index_aux'].max() - T_2]
                     tvec = np.arange(dados_casos['index_aux'].max(),tmax,1)
 
                
                 soln = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
+                if descr == "Com distanciamento social":
+                    soln_aux = soln
+
                 names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
             
                 df_ = pd.DataFrame(soln, columns = names)
@@ -457,7 +460,7 @@ def main(IncubPeriod):
             st.write("Os casos graves são casos que necessitam de hospitalização imediata, sem a necessidade de ir para UTI ou utilizar respiradores.")
             
             fig = px.line(df_, x="Tempo (dias)", y='Inf. Grave', color = 'Sim')
-            max_ = dados_casos['Inf. Grave'].max() + 20
+            max_ = dados_casos['Inf. Grave'].max() + 100
             fig.update_layout(yaxis=dict(range=[-5, max_]))
 
             st.plotly_chart(fig)
@@ -466,11 +469,11 @@ def main(IncubPeriod):
             st.write("Casos críticos são casos que devem ser priorizados para internação em UTI e utilizar respiradores.")
             
             fig = px.line(df_, x="Tempo (dias)", y='Inf. Crítico', color = 'Sim')
-            max_ = dados_casos['Inf. Crítico'].max() + 20
+            max_ = dados_casos['Inf. Crítico'].max() + 100
             fig.update_layout(yaxis=dict(range=[-5, max_]))
 
             st.plotly_chart(fig)
-            max_ = dados_casos['Obitos'].max() + 20
+            max_ = dados_casos['Obitos'].max() + 100
             st.subheader("Regressão de mortes")
             
             fig = px.line(df_, x="Tempo (dias)", y='Mortos', color = 'Sim')
