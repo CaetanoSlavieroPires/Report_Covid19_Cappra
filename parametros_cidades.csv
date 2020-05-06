@@ -1,22 +1,32 @@
-E,b0,b1,f,f_grave,f_critico,delay,p_morte,rmse,Cidade,reduc,Inicio,id,descrição
-5,0.7000,0.3000,0.2000,0.2000,0.0500,45,0.1,22.9444,Porto Alegre,0,0,0,Sem distanciamento social
-5,0.7000,0.3000,0.2000,0.2000,0.0500,45,0.1,22.9444,Porto Alegre,0.64,16,1,Com distanciamento social
-5,0.7000,0.3000,0.2000,0.2000,0.0500,45,0.1,22.9444,Porto Alegre,0,16,2,Com o fim do distanciamento social
-5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0,0,0,Sem distanciamento social
-10,0.3,0.3000,0.2000,0.2000,0.3,20,0.2,15.9,Curitiba,0,0,0,Sem distanciamento social
-1,0.3,0.7,0.2000,0.3,0.25,15,0.1,0.6812,Jaraguá do Sul,0,0,0,Sem distanciamento social
-5,0.7000,0.3000,0.2000,0.2000,0.25,15,0.5,4,Passo Fundo,0,0,0,Sem distanciamento social
-5,0.5000,0.3000,0.2000,0.2000,0.3,10,0.1,22.9444,Caxias do Sul,0,0,0,Sem distanciamento social
-5,0.5000,0.3000,0.2000,0.2000,0.3,10,0.1,22.9444,Foz do Iguaçu,0,0,0,Sem distanciamento social
-5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0.64,20,1,Com distanciamento social
-10,0.3,0.3000,0.2000,0.2000,0.3,20,0.2,15.9,Curitiba,0.64,22,1,Com distanciamento social
-1,0.3,0.7,0.2000,0.3,0.25,15,0.1,0.6812,Jaraguá do Sul,0.8,10,1,Com distanciamento social
-5,0.7000,0.3000,0.2000,0.2000,0.25,15,0.5,4,Passo Fundo,0.64,16,1,Com distanciamento social
-5,0.5000,0.3000,0.2000,0.2000,0.3,10,0.1,22.9444,Caxias do Sul,0.64,16,1,Com distanciamento social
-5,0.5000,0.3000,0.2000,0.2000,0.3,10,0.1,22.9444,Foz do Iguaçu,0.64,16,1,Com distanciamento social
-5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0,0,2,Com o fim do distanciamento social
-10,0.3,0.3000,0.2000,0.2000,0.3,20,0.2,15.9,Curitiba,0,0,2,Com o fim do distanciamento social
-1,0.3,0.7,0.2000,0.3,0.25,15,0.1,0.6812,Jaraguá do Sul,0,0,2,Com o fim do distanciamento social
-5,0.7000,0.3000,0.2000,0.2000,0.25,15,0.5,4,Passo Fundo,0,0,2,Com o fim do distanciamento social
-5,0.5000,0.3000,0.2000,0.2000,0.3,10,0.1,22.9444,Caxias do Sul,0,0,2,Com o fim do distanciamento social
-5,0.5000,0.3000,0.2000,0.2000,0.3,10,0.1,22.9444,Foz do Iguaçu,0,0,2,Com o fim do distanciamento social
+E,b0,b1,f,f_grave,f_critico,delay,p_morte,rmse,Cidade,reduc,Inicio,id,descrição,Fim
+5,0.7000,0.3000,0.2000,0.2000,0.0500,45,0.1,22.9444,Porto Alegre,0,0,0,Sem distanciamento social,365
+5,0.7000,0.3000,0.2000,0.2000,0.0500,45,0.1,22.9444,Porto Alegre,0.64,16,1,Com distanciamento social,365
+5,0.7000,0.3000,0.2000,0.2000,0.0500,45,0.1,22.9444,Porto Alegre,0,0,2,Com o fim do distanciamento social,365
+5,0.7000,0.3000,0.2000,0.2000,0.0500,45,0.1,22.9444,Porto Alegre,0.32,0,3,Reduzindo o distanciamento pela metade,365
+5,0.7000,0.3000,0.2000,0.2000,0.0500,45,0.1,22.9444,Porto Alegre,0.95,0,4,Lockdown,365
+5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0,0,0,Sem distanciamento social,365
+5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0.55,20,1,Com distanciamento social,365
+5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0,0,2,Com o fim do distanciamento social,365
+5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0.27,0,3,Reduzindo o distanciamento pela metade,365
+5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0.95,0,4,Lockdown,365
+10,0.5,0.3000,0.2000,0.2000,0.3,20,0.2,15.9,Curitiba,0,0,0,Sem distanciamento social,365
+10,0.5,0.3000,0.2000,0.2000,0.3,20,0.2,15.9,Curitiba,0.64,16,1,Com distanciamento social,365
+10,0.5,0.3000,0.2000,0.2000,0.3,20,0.2,15.9,Curitiba,0,0,2,Com o fim do distanciamento social,365
+10,0.5,0.3000,0.2000,0.2000,0.3,20,0.2,15.9,Curitiba,0.32,0,3,Reduzindo o distanciamento pela metade,365
+10,0.5,0.3000,0.2000,0.2000,0.3,20,0.2,15.9,Curitiba,0.95,0,4,Lockdown,365
+1,0.7000,0.3000,0.2000,0.3,0.25,15,0.1,0.6812,Jaraguá do Sul,0,0,0,Sem distanciamento social,365
+1,0.7000,0.3000,0.2000,0.3,0.25,15,0.1,0.6812,Jaraguá do Sul,0.9,10,1,Com distanciamento social,365
+1,0.7000,0.3000,0.2000,0.3,0.25,15,0.1,0.6812,Jaraguá do Sul,0,0,2,Com o fim do distanciamento social,365
+5,0.7000,0.3000,0.2000,0.2000,0.25,15,0.5,4,Passo Fundo,0,0,0,Sem distanciamento social,365
+5,0.7000,0.3000,0.2000,0.2000,0.25,15,0.5,4,Passo Fundo,0.64,16,1,Com distanciamento social,21
+5,0.7000,0.3000,0.2000,0.2000,0.25,15,0.5,4,Passo Fundo,0,20,2,Com distanciamento social,29
+5,0.7000,0.3000,0.2000,0.2000,0.25,15,0.5,4,Passo Fundo,0.64,28,3,Com distanciamento social,365
+5,0.7000,0.3000,0.2000,0.2000,0.25,15,0.5,4,Passo Fundo,0,0,4,Com o fim do distanciamento social,365
+5,0.5000,0.3000,0.2000,0.2000,0.3,10,0.1,22.9444,Caxias do Sul,0,0,0,Sem distanciamento social,365
+5,0.5000,0.3000,0.2000,0.2000,0.3,10,0.1,22.9444,Caxias do Sul,0.70,14,1,Com distanciamento social,30
+5,0.5000,0.3000,0.2000,0.2000,0.3,10,0.1,22.9444,Caxias do Sul,0,29,2,Com distanciamento social,47
+5,0.5000,0.3000,0.2000,0.2000,0.3,10,0.1,22.9444,Caxias do Sul,0.70,46,3,Com distanciamento social,365
+5,0.5000,0.3000,0.2000,0.2000,0.3,10,0.1,22.9444,Caxias do Sul,0,0,4,Com o fim do distanciamento social,365
+3,0.5000,0.3000,0.2000,0.2000,0.3,10,0.1,22.9444,Foz do Iguaçu,0,0,0,Sem distanciamento social,365
+5,0.5000,0.3000,0.2000,0.2000,0.3,10,0.1,22.9444,Foz do Iguaçu,0.64,16,1,Com distanciamento social,365
+3,0.5000,0.3000,0.2000,0.2000,0.3,10,0.1,22.9444,Foz do Iguaçu,0,0,2,Com o fim do distanciamento social,365

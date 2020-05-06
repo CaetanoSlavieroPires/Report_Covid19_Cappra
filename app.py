@@ -252,6 +252,7 @@ def model_city(tmax,TimeStart,TimeEnd,reduc1,reduc2,reduc3,reducasym):
     data1 = []
     data2 = []
     data3 = []
+
     for x in range(0, tmax):
         data1.append([x,'Respiradores',ConvVentCap])
          
@@ -262,12 +263,15 @@ def model_city(tmax,TimeStart,TimeEnd,reduc1,reduc2,reduc3,reducasym):
             
     st.subheader("Data do colapso do sistema de saúde após o primeiro caso")
     st.write("Comparação do tempo da data de lotação do sistema hospitalar considerando o cenário atual de crescimento do vírus versus o cenário com intervenção.")
+    
     df_sim_sem_int['Soma'] = df_sim_sem_int['Inf. Grave'] + df_sim_sem_int['Inf. Crítico']
+    
     dict_sem = {
         'Leitos hospitalares':int(df_sim_sem_int[df_sim_sem_int['Inf. Grave'] > AvailHospBeds]['Tempo (dias)'].head(1).to_list()[0]),
         'Leitos de UTI':int(df_sim_sem_int[df_sim_sem_int['Inf. Crítico'] > AvailICUBeds]['Tempo (dias)'].head(1).to_list()[0]),
         'Respiradores':int(df_sim_sem_int[df_sim_sem_int['Inf. Crítico'] > ConvVentCap]['Tempo (dias)'].head(1).to_list()[0])
     }
+
     try:
         lh = int(df_sim_com_int[df_sim_com_int['Inf. Grave'] > AvailHospBeds]['Tempo (dias)'].head(1).to_list()[0])
     except: 
@@ -288,8 +292,7 @@ def model_city(tmax,TimeStart,TimeEnd,reduc1,reduc2,reduc3,reducasym):
             'Leitos de UTI':lu,
             'Respiradores':r
     }
-
-            
+     
     st.table(pd.DataFrame(dict_sem, index = ['Sem interveção']).append(pd.DataFrame(dict_com, index = ['Com intervenção'])))
             
     st.title('Auge de infectados')
@@ -300,8 +303,7 @@ def model_city(tmax,TimeStart,TimeEnd,reduc1,reduc2,reduc3,reducasym):
     ]
             
     st.subheader('Sem intervenção')
-    st.table(pd.DataFrame(lista_1, columns = ['Dias após primeiro caso','Quantidade de pessoas'],index = ['Casos leves','Casos graves','Casos críticos']))
-            
+    st.table(pd.DataFrame(lista_1, columns = ['Dias após primeiro caso','Quantidade de pessoas'],index = ['Casos leves','Casos graves','Casos críticos']))       
     st.subheader('Com intervenção')
     try:
         lista_2=[[int(df_sim_com_int[df_sim_com_int['Inf. Leve'] == df_sim_com_int['Inf. Leve'].max()]['Tempo (dias)'].to_list()[0]),int(df_sim_com_int['Inf. Leve'].max())],
@@ -334,8 +336,6 @@ def main(IncubPeriod):
     reduc3 = 0.5
     reducasym = 0.5
     
-
-    
     st.title("Report da simulação do COVID-19")
     st.write("Esse simulador desenvolvido pela [Cappra Institute for Data Science](https://www.cappra.institute/) utiliza o modelo epidêmico SEIR desenvolvido pela cientista [Alison Hill](https://alhill.shinyapps.io/COVID19seir/) para modelar o crescimento do CODIV-19 nas cidades brasileiras, utilizando dados de casos graves, críticos e óbitos divulgados pelas secretarias de saúde.")
     st.write("A subnotificação de casos e o baixo número de testes na população tem sido um problema para realizar a modelagem, obrigando os pesquisadores a fazerem extrapolações de casos para estimar o crescimento do vírus no Brasil. Tendo isso em vista, o modelo é parametrizado utilizando as notificações de casos hospitalizados, internados em UTI e óbitos, por serem os dados mais realistas divulgados pelas secretarias de saude. Com isso, podemos fazer extrapolações de diversos cenários da propagação do vírus, prevendo o que poderá acontecer com o sistema de saúde com e sem ações de distanciamento social e estimando a duração da propagação do vírus em nossas cidades.")
@@ -348,7 +348,6 @@ def main(IncubPeriod):
         parametros = pd.read_csv('parametros_cidades.csv', encoding = "ISO-8859-1")
         parametros = parametros[parametros['Cidade'] == cidade].sort_values('rmse')
         dados = dados.set_index('Cidade')
-        dados['População'] = dados['População']
         N = int(dados.loc[cidade,'População'])
         st.table(pd.DataFrame(dados.loc[cidade,:].to_dict(), index = ['']))
     page = 'Report'
@@ -364,13 +363,12 @@ def main(IncubPeriod):
             dados_casos['index_aux'] = dados_casos['index']
             dados_casos['Sim'] = 'REAL'
             dados_casos['Casos Log'] = np.log(dados_casos['Casos'])
-            #dados_casos['Infectados'] = dados_casos['UTI'] + dados_casos['Enfermaria'] + dados_casos['Domiciliar']
             dados_casos_aux = dados_casos[['Casos','Recuperados','Obitos']].tail(1)
             dados_casos_aux.index = ['']
             slot1.table(dados_casos_aux)
             fig = px.line(dados_casos, x="Data", y='Casos')
             st.plotly_chart(fig)
-            st.subheader('Casos registrados em ' + cidade + ' em escada logarítima')
+            st.subheader('Casos registrados em ' + cidade + ' em escada logarítmica')
             fig = px.line(dados_casos, x="Data", y='Casos Log')
             st.plotly_chart(fig)
 
@@ -409,21 +407,26 @@ def main(IncubPeriod):
                 ProbDeath = parametros.iloc[n,7]
                 TimeStart = parametros.iloc[n,11]
                 CFR = FracCritical*ProbDeath
+                tmax = parametros.iloc[n,14]
+                descr = parametros.iloc[n,13]
                 
                 a0, u, g0, g1, g2, g3, p1, p2, f = params(IncubPeriod, FracMild, FracCritical, FracSevere, TimeICUDeath, CFR, DurMildInf, DurHosp, i, FracAsym, DurAsym, N)
                 
-                if n == 0:
+                if descr == "Sem distanciamento social":
                     pop = np.zeros(8)
                     pop[0] = N - E
                     pop[1] = E
                     tvec = np.arange(TimeStart,tmax+delay,1)
 
-                elif n == 1:
-                    pop = soln[TimeStart + delay]
+                elif descr == "Com distanciamento social":
+                    if n == 1:
+                        pop = soln[TimeStart + delay]
+                    else:
+                        pop = soln[-1]
                     tvec = np.arange(TimeStart,tmax,1)
                     T_2 = TimeStart
 
-                elif n == 2:
+                elif descr == "Com o fim do distanciamento social":
                     pop = soln[dados_casos['index_aux'].max() - T_2]
                     tvec = np.arange(dados_casos['index_aux'].max(),tmax,1)
 
@@ -432,12 +435,12 @@ def main(IncubPeriod):
                 names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
             
                 df_ = pd.DataFrame(soln, columns = names)
-                if n == 0:
+                if descr == "Sem distanciamento social":
                     df_['Tempo (dias)'] = tvec - delay
                 else:
                     df_['Tempo (dias)'] = tvec
 
-                df_['Sim'] = parametros.iloc[n,13]
+                df_['Sim'] = descr
                 df = df.append(df_)
 
             df = df.append(dados_casos[['Tempo (dias)','Inf. Grave','Inf. Crítico','Mortos','Sim']])
@@ -484,8 +487,6 @@ def main(IncubPeriod):
             AvailICUBeds=int(dados.loc[cidade,'Leitos UTI Adulto'])
             ConvVentCap=int(dados.loc[cidade,'Número de Respiradores'])
 
-    ####################################################################################################
-
             #Gráficos da capacidade hospitalar################################################################    
             st.subheader('Infecções críticas e graves vs Capacidade hospitalar e Leitos de UTI')
             df_ = df.copy(deep = True)
@@ -502,7 +503,6 @@ def main(IncubPeriod):
             fig.update_layout(yaxis=dict(range=[-5, max_]))
             st.plotly_chart(fig)
                 
-
             st.subheader('Infecções críticas vs Leitos na UTI')
             df_ = df.copy(deep = True)
             df_[y_index] = df_['Inf. Crítico']
