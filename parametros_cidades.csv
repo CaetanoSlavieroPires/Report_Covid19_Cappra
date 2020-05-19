@@ -5,10 +5,13 @@ E,b0,b1,f,f_grave,f_critico,delay,p_morte,rmse,Cidade,reduc,Inicio,id,descrição,
 5,0.7000,0.3000,0.2000,0.2000,0.0500,45,0.1,22.9444,Porto Alegre,0.32,0,3,Reduzindo o distanciamento pela metade,365
 5,0.7000,0.3000,0.2000,0.2000,0.0500,45,0.1,22.9444,Porto Alegre,0.95,0,4,Lockdown,365
 5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0,0,0,Sem distanciamento social,365
-5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0.55,20,1,Com distanciamento social,365
-5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0,0,2,Com o fim do distanciamento social,365
-5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0.27,0,3,Reduzindo o distanciamento pela metade,365
-5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0.95,0,4,Lockdown,365
+5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0.58,20,1,Com distanciamento social,35
+5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0.6,34,2,Com distanciamento social,44
+5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0.95,43,3,Com distanciamento social,57
+5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0.55,56,4,Com distanciamento social,365
+5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0,0,5,Com o fim do distanciamento social,365
+5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0.27,0,6,Reduzindo o distanciamento pela metade,365
+5,0.5,0.5,0.2000,0.2000,0.4,15,0.6,27,São Luís,0.95,0,7,Lockdown,365
 10,0.5,0.3000,0.2000,0.2000,0.3,20,0.2,15.9,Curitiba,0,0,0,Sem distanciamento social,365
 10,0.5,0.3000,0.2000,0.2000,0.3,20,0.2,15.9,Curitiba,0.64,16,1,Com distanciamento social,365
 10,0.5,0.3000,0.2000,0.2000,0.3,20,0.2,15.9,Curitiba,0,0,2,Com o fim do distanciamento social,365
