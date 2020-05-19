@@ -372,92 +372,92 @@ def main(IncubPeriod):
             except:
                 pass
 
-            #df__ = df[df['Sim'] == 'Com distanciamento'].copy(deep = True)
-            #df__ = pd.melt(df__,id_vars = ['Tempo (dias)'], var_name='Tipo', value_name='Número de Pessoas')
-            #fig = px.line(df__[(~df__['Tipo'].isin(['Sucetíveis','Recuperados','Mortos'])) & (df__['Tempo (dias)'] >= 0)], x="Tempo (dias)", y='Número de Pessoas', color = 'Tipo')
-            #fig_2 = px.line(df__[(df__['Tipo'].isin(['Sucetíveis','Recuperados','Mortos'])) & (df__['Tempo (dias)'] >= 0)], x="Tempo (dias)", y='Número de Pessoas', color = 'Tipo')
-            #st.title('Simulação da progressão natural do COVID-19 em ' + cidade + ' se houver o fim do distanciamento social')
-            #st.write('O modelo é parametrizado baseado na quantidade ativa de casos graves (pacientes hospitalizados), casos críticos (pacientes internados em UTI) e óbitos. Sabemos sobre a subnotificação causada pela baixa quantidade de testes, mas para realizar uma extrapolação de casos leves, assintomáticos e expostos ao vírus, utilizamos dados de hospitalizados, internados em UTI e óbitos para minimizar o erro do modelo.')
-            #st.subheader('Curvas de infectados do modelo parametrizado:')
-            #st.plotly_chart(fig)
-            #st.subheader('Curvas de sucetíveis, recuperados e mortos do modelo parametrizado:')
-            #st.plotly_chart(fig_2)
+            df__ = df[df['Sim'] == 'Com o fim do distanciamento social'].copy(deep = True)
+            df__ = pd.melt(df__,id_vars = ['Tempo (dias)'], var_name='Tipo', value_name='Número de Pessoas')
+            fig = px.line(df__[(~df__['Tipo'].isin(['Sucetíveis','Recuperados','Mortos'])) & (df__['Tempo (dias)'] >= 0)], x="Tempo (dias)", y='Número de Pessoas', color = 'Tipo')
+            fig_2 = px.line(df__[(df__['Tipo'].isin(['Sucetíveis','Recuperados','Mortos'])) & (df__['Tempo (dias)'] >= 0)], x="Tempo (dias)", y='Número de Pessoas', color = 'Tipo')
+            st.title('Simulação da progressão natural do COVID-19 em ' + cidade + ' se houver o fim do distanciamento social')
+            st.write('O modelo é parametrizado baseado na quantidade ativa de casos graves (pacientes hospitalizados), casos críticos (pacientes internados em UTI) e óbitos. Sabemos sobre a subnotificação causada pela baixa quantidade de testes, mas para realizar uma extrapolação de casos leves, assintomáticos e expostos ao vírus, utilizamos dados de hospitalizados, internados em UTI e óbitos para minimizar o erro do modelo.')
+            st.subheader('Curvas de infectados do modelo parametrizado:')
+            st.plotly_chart(fig)
+            st.subheader('Curvas de sucetíveis, recuperados e mortos do modelo parametrizado:')
+            st.plotly_chart(fig_2)
 
-            #data_aux = dados_casos['index_aux'].max()
-            #st.title('Estimativa para a progressão do COVID-19 em ' + cidade + ' se houver o fim do distanciamento social')
-            #st.subheader('Visualizando como estará distribuída a infecção em toda a população da cidade')
-            #st.subheader('Estimativa para daqui 7 dias:')
-            #data = (df__[(df__['Tipo'].isin(["Sucetíveis","Expostos",'Recuperados','Mortos','Inf. Crítico','Inf. Grave','Assintomáticos', 'Inf. Leve'])) & (df__['Tempo (dias)'] == data_aux + 7)][['Tipo','Número de Pessoas']].set_index('Tipo')/N*100)
-            #df_aux = data.copy(deep = True)
-            #df_aux['Número de Pessoas'] = df_aux['Número de Pessoas'].apply(lambda x: str(round(x,2)) + '%')
-            #data = data.to_dict()['Número de Pessoas']
-            #st.table(pd.DataFrame(df_aux.to_dict()['Número de Pessoas'], index = ['Porcentagem da população']))
+            data_aux = dados_casos['index_aux'].max()
+            st.title('Estimativa para a progressão do COVID-19 em ' + cidade + ' se houver o fim do distanciamento social')
+            st.subheader('Visualizando como estará distribuída a infecção em toda a população da cidade')
+            st.subheader('Estimativa para daqui 7 dias:')
+            data = (df__[(df__['Tipo'].isin(["Sucetíveis","Expostos",'Recuperados','Mortos','Inf. Crítico','Inf. Grave','Assintomáticos', 'Inf. Leve'])) & (df__['Tempo (dias)'] == data_aux + 7)][['Tipo','Número de Pessoas']].set_index('Tipo')/N*100)
+            df_aux = data.copy(deep = True)
+            df_aux['Número de Pessoas'] = df_aux['Número de Pessoas'].apply(lambda x: str(round(x,2)) + '%')
+            data = data.to_dict()['Número de Pessoas']
+            st.table(pd.DataFrame(df_aux.to_dict()['Número de Pessoas'], index = ['Porcentagem da população']))
 
-            #fig = plt.figure(
-            #    FigureClass=Waffle, 
-            #    rows=5,
-            #    columns = 20,
-            #    values=data, 
-            #    colors=("#58c736","#a4de26","#0b2fe3","#f5c842","#fc9403","#f73c02","#07e8f0","#ed07bf"),
-            #    title={'label': '', 'loc': 'left'},
-            #    labels=["{0}".format(k) for k, v in data.items()],
-            #    legend={'loc': 'lower left', 'bbox_to_anchor': (0, -0.2),'ncol':3, 'framealpha': 10},
-            #    icons='user', icon_size=45, 
-            #    icon_legend=True,
-            #    figsize=(15, 6)
-            #)
-            #fig.gca().set_facecolor('#EEEEEE')
-            #fig.set_facecolor('#EEEEEE')
-            #plt.show()
-            #st.pyplot()
+            fig = plt.figure(
+                FigureClass=Waffle, 
+                rows=5,
+                columns = 20,
+                values=data, 
+                colors=("#58c736","#a4de26","#0b2fe3","#f5c842","#fc9403","#f73c02","#07e8f0","#ed07bf"),
+                title={'label': '', 'loc': 'left'},
+                labels=["{0}".format(k) for k, v in data.items()],
+                legend={'loc': 'lower left', 'bbox_to_anchor': (0, -0.2),'ncol':3, 'framealpha': 10},
+                icons='user', icon_size=45, 
+                icon_legend=True,
+                figsize=(15, 6)
+            )
+            fig.gca().set_facecolor('#EEEEEE')
+            fig.set_facecolor('#EEEEEE')
+            plt.show()
+            st.pyplot()
             
-            #st.subheader('Estimativa para daqui 30 dias:')
-            #data = (df__[(df__['Tipo'].isin(["Sucetíveis","Expostos",'Recuperados','Mortos','Inf. Crítico','Inf. Grave','Assintomáticos', 'Inf. Leve'])) & (df__['Tempo (dias)'] == data_aux + 30)][['Tipo','Número de Pessoas']].set_index('Tipo')/N*100)
-            #df_aux = data.copy(deep = True)
-            #df_aux['Número de Pessoas'] = df_aux['Número de Pessoas'].apply(lambda x: str(round(x,2)) + '%')
-            #data = data.to_dict()['Número de Pessoas']
-            #st.table(pd.DataFrame(df_aux.to_dict()['Número de Pessoas'], index = ['Porcentagem da população']))
-            #fig = plt.figure(
-            #    FigureClass=Waffle, 
-            #    rows=5,
-            #    columns = 20,
-            #    values=data, 
-            #    colors=("#58c736","#a4de26","#0b2fe3","#f5c842","#fc9403","#f73c02","#07e8f0","#ed07bf"),
-            #    title={'label': '', 'loc': 'left'},
-            #    labels=["{0}".format(k) for k, v in data.items()],
-            #    legend={'loc': 'lower left', 'bbox_to_anchor': (0, -0.2),'ncol':3, 'framealpha':10},
-            #    icons='user', icon_size=45, 
-            #    icon_legend=True,
-            #    figsize=(15, 6)
-            #)
-            #fig.gca().set_facecolor('#EEEEEE')
-            #fig.set_facecolor('#EEEEEE')
-            #plt.show()
-            #st.pyplot()
+            st.subheader('Estimativa para daqui 30 dias:')
+            data = (df__[(df__['Tipo'].isin(["Sucetíveis","Expostos",'Recuperados','Mortos','Inf. Crítico','Inf. Grave','Assintomáticos', 'Inf. Leve'])) & (df__['Tempo (dias)'] == data_aux + 30)][['Tipo','Número de Pessoas']].set_index('Tipo')/N*100)
+            df_aux = data.copy(deep = True)
+            df_aux['Número de Pessoas'] = df_aux['Número de Pessoas'].apply(lambda x: str(round(x,2)) + '%')
+            data = data.to_dict()['Número de Pessoas']
+            st.table(pd.DataFrame(df_aux.to_dict()['Número de Pessoas'], index = ['Porcentagem da população']))
+            fig = plt.figure(
+                FigureClass=Waffle, 
+                rows=5,
+                columns = 20,
+                values=data, 
+                colors=("#58c736","#a4de26","#0b2fe3","#f5c842","#fc9403","#f73c02","#07e8f0","#ed07bf"),
+                title={'label': '', 'loc': 'left'},
+                labels=["{0}".format(k) for k, v in data.items()],
+                legend={'loc': 'lower left', 'bbox_to_anchor': (0, -0.2),'ncol':3, 'framealpha':10},
+                icons='user', icon_size=45, 
+                icon_legend=True,
+                figsize=(15, 6)
+            )
+            fig.gca().set_facecolor('#EEEEEE')
+            fig.set_facecolor('#EEEEEE')
+            plt.show()
+            st.pyplot()
             
-            #st.subheader('Estimativa para o fim da simulação:')
-            #data = (df__[(df__['Tipo'].isin(["Sucetíveis",'Recuperados','Mortos'])) & (df__['Tempo (dias)'] == df__['Tempo (dias)'].max())][['Tipo','Número de Pessoas']].set_index('Tipo')/N*100)
-            #df_aux = data.copy(deep = True)
-            #df_aux['Número de Pessoas'] = df_aux['Número de Pessoas'].apply(lambda x: str(round(x,2)) + '%')
-            #data = data.to_dict()['Número de Pessoas']
-            #st.table(pd.DataFrame(df_aux.to_dict()['Número de Pessoas'], index = ['Porcentagem da população']))
-            #fig = plt.figure(
-            #    FigureClass=Waffle, 
-            #    rows=5,
-            #    columns = 20,
-            #    values=data, 
-            #    colors=("#58c736", "#07e8f0", "#c734ae"),
-            #    title={'label': '', 'loc': 'left'},
-            #    labels=["{0}".format(k) for k, v in data.items()],
-            #    legend={'loc': 'lower left', 'bbox_to_anchor': (0, -0.2), 'ncol': 3, 'framealpha': 10},
-            #    icons='user', icon_size=45, 
-            #    icon_legend=True,
-            #    figsize=(15, 6)
-            #)
-            #fig.gca().set_facecolor('#EEEEEE')
-            #fig.set_facecolor('#EEEEEE')
-            #plt.show()
-            #st.pyplot()
+            st.subheader('Estimativa para o fim da simulação:')
+            data = (df__[(df__['Tipo'].isin(["Sucetíveis",'Recuperados','Mortos'])) & (df__['Tempo (dias)'] == df__['Tempo (dias)'].max())][['Tipo','Número de Pessoas']].set_index('Tipo')/N*100)
+            df_aux = data.copy(deep = True)
+            df_aux['Número de Pessoas'] = df_aux['Número de Pessoas'].apply(lambda x: str(round(x,2)) + '%')
+            data = data.to_dict()['Número de Pessoas']
+            st.table(pd.DataFrame(df_aux.to_dict()['Número de Pessoas'], index = ['Porcentagem da população']))
+            fig = plt.figure(
+                FigureClass=Waffle, 
+                rows=5,
+                columns = 20,
+                values=data, 
+                colors=("#58c736", "#07e8f0", "#c734ae"),
+                title={'label': '', 'loc': 'left'},
+                labels=["{0}".format(k) for k, v in data.items()],
+                legend={'loc': 'lower left', 'bbox_to_anchor': (0, -0.2), 'ncol': 3, 'framealpha': 10},
+                icons='user', icon_size=45, 
+                icon_legend=True,
+                figsize=(15, 6)
+            )
+            fig.gca().set_facecolor('#EEEEEE')
+            fig.set_facecolor('#EEEEEE')
+            plt.show()
+            st.pyplot()
 
             st.title("Sobre a simulação:")
             st.write("A simulação e a modelagem foram desenvolvidas aplicando um simulador mais generalizado que desenvolvemos na [Cappra Institute for Data Science](https://www.cappra.institute/) utiliza o modelo epidêmico SEIR desenvolvido pela cientista [Alison Hill](https://alhill.shinyapps.io/COVID19seir/).")
