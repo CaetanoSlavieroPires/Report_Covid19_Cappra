@@ -112,7 +112,7 @@ def main(IncubPeriod):
     st.title("Report da simulação do COVID-19")
     dados = pd.read_csv('dados_cidades.csv',encoding = "ISO-8859-1")
     #cidade = st.selectbox("Selecione a cidade", list(dados['Cidade']))
-    cidade = 'Caxias do Sul'
+    cidade = 'São Luís'
     dados = dados.set_index('Cidade')
     dados['População'] = dados['População']#.apply(lambda x: ''.join(x.split('.')))
     N = int(dados.loc[cidade,'População'])
@@ -123,21 +123,21 @@ def main(IncubPeriod):
         dados_casos = dados_casos.reset_index(drop = True).reset_index()  
         dados_casos['index_aux'] = dados_casos['index']
         dados_casos['Sim'] = 'REAL'
-        lista_expostos = [5,10]
-        lista_b0 = [0.3,0.5,0.7,1]
-        lista_b1 = [0.3,0.5,0.7,1]
+        lista_expostos = [5]
+        lista_b0 = [0.5]
+        lista_b1 = [0.5]
         lista_f = [0.2]
-        lista_delay = [10,15,20]
-        lista_f_grave = [0.2,0.3,0.4]
-        lista_f_critico = [0.1,0.2,0.3]
-        lista_p_morte = [0.1]
+        lista_delay = [15]
+        lista_f_grave = [0.2,0.25,0.3,0.4,0.45]
+        lista_f_critico = [0.3,0.35,0.4,0.45]
+        lista_p_morte = [0.55,0.6,0.65]
         
         b2 = b2/N
         b3 = b2/N
         
         erro = pd.DataFrame(itertools.product(lista_expostos,lista_b0,lista_b1, lista_f, lista_f_grave, lista_f_critico, lista_delay, lista_p_morte), columns = ['E','b0','b1','f','f_grave','f_critico','delay','p_morte'])
-        maxs = 23
-        window = 9
+        maxs = 27
+        window = 10
         ################### Encontra parâmetros que minimiza o erro do modelo em relação aos dados reais #############
         def rmse_calc(x, maxs, windows):
             E = x['E'] #Expostos iniciais
@@ -166,13 +166,12 @@ def main(IncubPeriod):
             names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
             df_ = pd.DataFrame(soln, columns = names)
             df_['index'] = tvec
-            df_aux = df_[(df_.index >= delay) & (df_.index < T+1)].reset_index(drop = True)
-            #st.write(max,max-window)
+            df_aux = df_[(df_.index >= delay) & (df_.index < T+1 - delay)].reset_index(drop = True)
             
             MSE_dom =0# mean_squared_error(y_true = (dados_casos['Domiciliar']), y_pred = (df_aux['Inf. Crítico']))
             MSE_crit = mean_squared_error(y_true = (dados_casos['UTI'][maxs-window:maxs]), y_pred = (df_aux['Inf. Crítico'][maxs-window:maxs]))
-            MSE_grave = mean_squared_error(y_true = (dados_casos['Enfermaria'][maxs-window:maxs]), y_pred = (df_aux['Inf. Grave'][maxs-window:maxs]))
-            MSE_mortos = 0#mean_squared_error(y_true = (dados_casos['Obitos'][maxs-window:maxs]), y_pred = (df_aux['Mortos'][maxs-window:maxs]))
+            MSE_grave = 0#mean_squared_error(y_true = (dados_casos['Enfermaria'][maxs-window:maxs]), y_pred = (df_aux['Inf. Grave'][maxs-window:maxs]))
+            MSE_mortos = mean_squared_error(y_true = (dados_casos['Obitos'][maxs-window:maxs]), y_pred = (df_aux['Mortos'][maxs-window:maxs]))
 
             return np.array([round(MSE_dom**(0.5),1),round(MSE_grave**(0.5),1), round(MSE_crit**(0.5),4), round(MSE_mortos**(0.5),1)])
         
@@ -183,7 +182,7 @@ def main(IncubPeriod):
         st.write(erro.shape)
         parametros = erro.reset_index(drop = True).sort_values('rmse').reset_index(drop = True).head(20)
 
-        for k in range(0,20):
+        for k in range(0,10):
             st.title('---------------------------------------------------')
             st.subheader('Familia de parâmetros '+str(k))
             E = parametros.iloc[k,0]
@@ -204,15 +203,7 @@ def main(IncubPeriod):
             
             delay = parametros.iloc[k,6]
             
-            tvec=np.arange(0,365,1)
-            soln=odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
-            names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
-            df_ = pd.DataFrame(soln, columns = names)
-            df_['index'] = tvec - delay
-            df_ = pd.melt(df_,id_vars = ['index'], var_name='Tipo', value_name='População')
-            data_aux = dados_casos['index_aux'].max()
-            
-            dados_casos['Tempo (dias)'] = dados_casos['index_aux'] + delay
+            dados_casos['Tempo (dias)'] = dados_casos['index_aux']
             dados_casos['Sim'] = 'Real'
             dados_casos['Inf. Leve'] = dados_casos['Domiciliar']
             dados_casos['Inf. Grave'] = dados_casos['Enfermaria']
@@ -220,7 +211,7 @@ def main(IncubPeriod):
             dados_casos['Mortos'] = dados_casos['Obitos']
             
             T = dados_casos['index'].max()
-            tvec=np.arange(0,T+10,1)
+            tvec=np.arange(0,T+delay,1)
             soln = odeint(seir,pop,tvec,args=(a0,g0,g1,g2,g3,p1,p2,u,b0,b1,b2,b3,f))
                 
             names = ["Sucetíveis","Expostos","Assintomáticos","Inf. Leve","Inf. Grave","Inf. Crítico","Recuperados","Mortos"]
@@ -229,26 +220,27 @@ def main(IncubPeriod):
             df_['Sim'] = 'Regressão'
             dados_casos['Tempo (dias)'] = dados_casos['index_aux']
             df_['Tempo (dias)'] = df_['Tempo (dias)'] - delay
+            df_ = df_.append(dados_casos[['Inf. Leve', 'Inf. Grave','Inf. Crítico','Mortos','Tempo (dias)','Sim']])
             df_ = df_[(df_['Tempo (dias)'] >= 0) & (df_['Tempo (dias)'] < dados_casos['Tempo (dias)'].max() + 10)]
-            
-            st.subheader("Regressão de casos leves:")
-            df_ = df_.append(dados_casos[['Tempo (dias)','Inf. Leve','Inf. Grave','Inf. Crítico','Mortos','Sim']])
-            fig = px.line(df_, x="Tempo (dias)", y='Inf. Leve', color = 'Sim')
-            st.plotly_chart(fig)
-
             st.subheader("Regressão de casos graves:")
             
             fig = px.line(df_, x="Tempo (dias)", y='Inf. Grave', color = 'Sim')
+            max_ = dados_casos['Inf. Grave'].max() + 100
+            fig.update_layout(yaxis=dict(range=[-5, max_]))
             st.plotly_chart(fig)
             
             st.subheader("Regressão de casos críticos:")
             
             fig = px.line(df_, x="Tempo (dias)", y='Inf. Crítico', color = 'Sim')
+            max_ = dados_casos['Inf. Crítico'].max() + 100
+            fig.update_layout(yaxis=dict(range=[-5, max_]))
             st.plotly_chart(fig)
             
             st.subheader("Regresão de mortes")
             
             fig = px.line(df_, x="Tempo (dias)", y='Mortos', color = 'Sim')
+            max_ = dados_casos['Mortos'].max() + 100
+            fig.update_layout(yaxis=dict(range=[-5, max_]))
             st.plotly_chart(fig)
                 
         
