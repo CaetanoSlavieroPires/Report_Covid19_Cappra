@@ -111,10 +111,9 @@ def main(IncubPeriod):
     
     st.title("Report da simulação do COVID-19")
     dados = pd.read_csv('dados_cidades.csv',encoding = "ISO-8859-1")
-    #cidade = st.selectbox("Selecione a cidade", list(dados['Cidade']))
-    cidade = 'São Luís'
+    cidade = 'Curitiba'
     dados = dados.set_index('Cidade')
-    dados['População'] = dados['População']#.apply(lambda x: ''.join(x.split('.')))
+    dados['População'] = dados['População']
     N = int(dados.loc[cidade,'População'])
     st.table(pd.DataFrame(dados.loc[cidade,:].to_dict(), index = ['']))
     page = 'Report'
@@ -124,20 +123,20 @@ def main(IncubPeriod):
         dados_casos['index_aux'] = dados_casos['index']
         dados_casos['Sim'] = 'REAL'
         lista_expostos = [5]
-        lista_b0 = [0.5]
-        lista_b1 = [0.5]
+        lista_b0 = [0.3,0.4,0.5]
+        lista_b1 = [0.3,0.4,0.5]
         lista_f = [0.2]
-        lista_delay = [15]
-        lista_f_grave = [0.2,0.25,0.3,0.4,0.45]
-        lista_f_critico = [0.3,0.35,0.4,0.45]
-        lista_p_morte = [0.55,0.6,0.65]
+        lista_delay = [10,15]
+        lista_f_grave = [0.2,0.25,0.3,0.4]
+        lista_f_critico = [0.1,0.2,0.3]
+        lista_p_morte = [0.1,0.15]
         
         b2 = b2/N
         b3 = b2/N
         
         erro = pd.DataFrame(itertools.product(lista_expostos,lista_b0,lista_b1, lista_f, lista_f_grave, lista_f_critico, lista_delay, lista_p_morte), columns = ['E','b0','b1','f','f_grave','f_critico','delay','p_morte'])
-        maxs = 27
-        window = 10
+        maxs = 28
+        window = 6
         ################### Encontra parâmetros que minimiza o erro do modelo em relação aos dados reais #############
         def rmse_calc(x, maxs, windows):
             E = x['E'] #Expostos iniciais
@@ -242,10 +241,6 @@ def main(IncubPeriod):
             max_ = dados_casos['Mortos'].max() + 100
             fig.update_layout(yaxis=dict(range=[-5, max_]))
             st.plotly_chart(fig)
-                
-        
-        
+                      
 if __name__ == "__main__":
     main(IncubPeriod)
-    
-
